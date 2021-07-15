@@ -87,28 +87,29 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
                         if (count == 1) {
                             console.log("------------------ON TRACK IN BRIDGE MCU > START CALLING SFU--------------", e)
 
-                            if (send_back_mcu_to_sfu) {
-                                send_back_mcu_to_sfu = false
-                                JitsiMeetJS.createLocalTracks({ devices: ['audio', 'video'] }, e)
-                                    .then(onLocalTracks)
-                                    .then(() => {
-                                        //
-                                        const video = document.createElement("video");
-                                        video.id = `remote`;
-                                        video.srcObject = newPeer.getRemoteStreams()[0];
-                                        video.autoplay = true;
-                                        video.style.border = "3px solid red";
-                                        document.body.appendChild(video)
-                                        console.log("okokokokoko: ", newPeer.iceConnectionState)
-                                        console.log("okokokokoko1: ", newPeer.connectionState)
-                                        //
-                                    })
-                                    .catch(error => {
-                                        console.log("errrrrrRER: ", error)
-                                        throw error;
-                                    });
 
-                            }
+                            JitsiMeetJS.createLocalTracks({ devices: ['audio', 'video'] }, e)
+                                .then(onLocalTracks)
+                                .then(() => {
+                                    //
+                                    // if (send_back_mcu_to_sfu) {
+                                    //     send_back_mcu_to_sfu = false
+                                    const video = document.createElement("video");
+                                    video.id = `remote`;
+                                    video.srcObject = newPeer.getRemoteStreams()[0];
+                                    video.autoplay = true;
+                                    video.style.border = "3px solid red";
+                                    document.body.appendChild(video)
+                                    console.log("okokokokoko: ", newPeer.iceConnectionState)
+                                    console.log("okokokokoko1: ", newPeer.connectionState)
+                                    //
+                                    // }
+                                })
+                                .catch(error => {
+                                    console.log("errrrrrRER: ", error)
+                                    throw error;
+                                });
+
 
                         }
                     };
@@ -203,9 +204,9 @@ function onRemoteTrack(track) {
     }
     try {
         // if(call_mcu){
-        if (track.getType() == 'video') {
-            mcu.main(track.stream);
-        }
+        // if (track.getType() == 'video') {
+        mcu.main(track.stream);
+        // }
         //     call_mcu = false
         // }
     } catch (error) {
