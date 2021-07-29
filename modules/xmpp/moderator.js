@@ -271,6 +271,8 @@ Moderator.prototype.allocateConferenceFocus = function() {
         this.setFocusUserJid(this.options.connection.focusUserJid);
 
         // Send create conference IQ
+        console.log("---------elem--allocateConferenceFocus------: ", this.createConferenceIq())
+
         this.connection.sendIQ(
             this.createConferenceIq(),
             result => this._allocateConferenceFocusSuccess(result, resolve),
@@ -408,6 +410,8 @@ Moderator.prototype._allocateConferenceFocusSuccess = function(
 
 Moderator.prototype.authenticate = function() {
     return new Promise((resolve, reject) => {
+        console.log("---------elem--authenticate------: ", this.createConferenceIq())
+
         this.connection.sendIQ(
             this.createConferenceIq(),
             result => {
@@ -463,6 +467,8 @@ Moderator.prototype._getLoginUrl = function(popup, urlCb, failureCb) {
         logger.error(errmsg, err);
         failureCb(err);
     }
+    console.log("---------elem--_getLoginUrl------: ", iq)
+
     this.connection.sendIQ(
         iq,
         result => {
@@ -499,6 +505,8 @@ Moderator.prototype.logout = function(callback) {
         xmlns: 'http://jitsi.org/protocol/focus',
         'session-id': sessionId
     });
+    console.log("---------elem--moderator logout------: ", iq)
+
     this.connection.sendIQ(
         iq,
         result => {

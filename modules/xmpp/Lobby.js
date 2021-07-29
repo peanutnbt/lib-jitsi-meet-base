@@ -310,6 +310,7 @@ export default class Lobby {
                 = $msg({ to: this.mainRoom.roomjid })
                     .c('x', { xmlns: 'http://jabber.org/protocol/muc#user' })
                     .c('invite', { to: jid });
+            console.log("---------elem-Lobby-------:", msgToSend)
 
             this.xmpp.connection.sendIQ(msgToSend,
                 () => { }, // eslint-disable-line no-empty-function

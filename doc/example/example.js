@@ -3,22 +3,23 @@ let mcu = {};
 let send_back_mcu_to_sfu = true
 
 mcu.main = (media_stream) => new Promise((resolve, reject) => {
-    console.log("---media_stream", media_stream.getTracks())
+    // console.log("---media_stream", media_stream.getTracks())
 
     try {
         let count = 1
         function createPeer() {
             let peer = new RTCPeerConnection({
                 iceServers: [{
-                    urls: ["stun:us-turn1.xirsys.com"]
-                }, {
-                    username: "aeBvNoa7ckuGqJ79zRuW5VoDqlOjOlv40EdgmklPH0XdqjYr_i6-EkoTRiqK9-XWAAAAAGDIKlNwZWFudXRuYnQ=",
-                    credential: "e1dc3ad4-cd90-11eb-bd2d-0242ac140004",
-                    urls: [
-                        "turn:us-turn1.xirsys.com:80?transport=udp",
-                        "turn:us-turn1.xirsys.com:80?transport=tcp",
-                    ]
-                }]
+                    urls: 'stun:meet-jit-si-turnrelay.jitsi.net:443'}]
+                //     urls: ["stun:us-turn1.xirsys.com"]
+                // }, {
+                //     username: "aeBvNoa7ckuGqJ79zRuW5VoDqlOjOlv40EdgmklPH0XdqjYr_i6-EkoTRiqK9-XWAAAAAGDIKlNwZWFudXRuYnQ=",
+                //     credential: "e1dc3ad4-cd90-11eb-bd2d-0242ac140004",
+                //     urls: [
+                //         "turn:us-turn1.xirsys.com:80?transport=udp",
+                //         "turn:us-turn1.xirsys.com:80?transport=tcp",
+                //     ]
+                // }]
             });
 
             return peer;
@@ -26,21 +27,27 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
         //
 
         var client = new WebSocket("wss://localhost:8081/call", "echo-protocol");
-        console.log("00000000000000000000000:", client)
+        // console.log("00000000000000000000000:", client)
         var candidate;
-        var newPeer = createPeer();
+        let newPeer = createPeer();
         newPeer.oniceconnectionstatechange = (event) => {
             console.log("oniceconnectionstatechange111: ", newPeer.iceConnectionState)
         }
+        newPeer.onconnectionstatechange = (event) => {
+            console.log("connectionStateconnectionState: ", newPeer.connectionState)
+        }
+
+
+
 
         client.onopen = async () => {
-            console.log("okkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+            // console.log("okkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
             var localStream = media_stream;
             localStream
                 .getTracks()
                 .forEach((track) => {
-                    console.log("track---------:", track)
-                    console.log("localStream---------:", localStream)
+                    // console.log("track---------:", track)
+                    // console.log("localStream---------:", localStream)
                     newPeer.addTrack(track, localStream)
                 });
 
@@ -48,7 +55,7 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
             newPeer.setLocalDescription(offer);
             console.log("------------------------MCU CONNECT SOCKET OK > START SENDING OFFER----------")
             setTimeout(() => {
-                console.log("=============client==========: ", offer.sdp)
+                // console.log("=============client==========: ", offer.sdp)
                 client.send(
                     JSON.stringify({
                         id: "client",
@@ -58,7 +65,7 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
             }, 2000);
             newPeer.onicecandidate = (e) => {
                 candidate = e.candidate;
-                console.log("----------e.candidate-----", e.candidate);
+                // console.log("----------e.candidate-----", e.candidate);
                 client.send(
                     JSON.stringify({
                         id: "onIceCandidate",
@@ -68,10 +75,10 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
             };
 
             const webSocketCallback = async (data) => {
-                console.log("1111111111111111111111111111111111111111111111!: ", data)
+                // console.log("1111111111111111111111111111111111111111111111!: ", data)
                 var val = JSON.parse(data);
                 // console.log(val)
-                let setSDP_OK = false
+                // let setSDP_OK = false
                 if (val.id === "response" && val.response === "accepted") {
                     sessionId = val.sessionId
                     console.log("sessionId", sessionId)
@@ -81,27 +88,28 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
                     };
                     const desc = new RTCSessionDescription(test);
                     newPeer.setRemoteDescription(desc);
-                    setSDP_OK = true
+                    // console.log("kurento desc: ", desc)
+                    // setSDP_OK = true
 
                     newPeer.ontrack = async (e) => {
                         if (count == 1) {
                             console.log("------------------ON TRACK IN BRIDGE MCU > START CALLING SFU--------------", e)
 
-
+                            // set
                             JitsiMeetJS.createLocalTracks({ devices: ['audio', 'video'] }, e)
                                 .then(onLocalTracks)
                                 .then(() => {
                                     //
                                     // if (send_back_mcu_to_sfu) {
                                     //     send_back_mcu_to_sfu = false
-                                    const video = document.createElement("video");
-                                    video.id = `remote`;
-                                    video.srcObject = newPeer.getRemoteStreams()[0];
-                                    video.autoplay = true;
-                                    video.style.border = "3px solid red";
-                                    document.body.appendChild(video)
-                                    console.log("okokokokoko: ", newPeer.iceConnectionState)
-                                    console.log("okokokokoko1: ", newPeer.connectionState)
+                                    // const video = document.createElement("video");
+                                    // video.id = `remote`;
+                                    // video.srcObject = newPeer.getRemoteStreams()[0];
+                                    // video.autoplay = true;
+                                    // video.style.border = "3px solid red";
+                                    // document.body.appendChild(video)
+                                    // console.log("okokokokoko: ", newPeer.iceConnectionState)
+                                    // console.log("okokokokoko1: ", newPeer.connectionState)
                                     //
                                     // }
                                 })
@@ -114,16 +122,20 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
                         }
                     };
                 }
-                // console.log(val.id)
-                if (val.id === "iceCandidate" && setSDP_OK) {
+                console.log("val.id: ", val.id)
+                // if (val.id === "iceCandidate" && setSDP_OK) {
+                if (val.id === "iceCandidate") {
                     try {
                         var test = new RTCIceCandidate(val.candidate);
-                        await newPeer.addIceCandidate(test);
-                        resolve("abc")
+                        console.log("kurento ice: ", test)
+                        setTimeout(async () => {
+                            await newPeer.addIceCandidate(test);
+                        }, 3000);
+                        // resolve("abc")
 
                     } catch (err) {
                         console.log("11111", err);
-                        reject(err)
+                        // reject(err)
                     }
                 }
             };
@@ -160,7 +172,7 @@ const remoteTracks = {};
  * @param tracks Array with JitsiTrack objects
  */
 function onLocalTracks(tracks) {
-    console.log("----------onLocalTracks111-------")
+    console.log("----------_setConference2-------: ", new Date().getTime(), tracks)
     localTracks = tracks;
     for (let i = 0; i < localTracks.length; i++) {
         localTracks[i].addEventListener(
@@ -204,9 +216,9 @@ function onRemoteTrack(track) {
     }
     try {
         // if(call_mcu){
-        // if (track.getType() == 'video') {
+        if (track.getType() == 'video') {
         mcu.main(track.stream);
-        // }
+        }
         //     call_mcu = false
         // }
     } catch (error) {

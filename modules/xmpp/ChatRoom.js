@@ -300,7 +300,8 @@ export default class ChatRoom extends Listenable {
                 to: this.roomjid
             })
                 .c('query', { xmlns: Strophe.NS.DISCO_INFO });
-
+        
+        console.log("---elem discoRoomInfo: ", getInfo)
         this.connection.sendIQ(getInfo, result => {
             const locked
                 = $(result).find('>query>feature[var="muc_passwordprotected"]')
@@ -399,6 +400,8 @@ export default class ChatRoom extends Listenable {
             formSubmit.c('field', { 'var': 'muc#roomconfig_whois' })
                 .c('value').t('anyone').up().up();
 
+            console.log("---elem createNonAnonymousRoom: ", formSubmit)
+            
             this.connection.sendIQ(formSubmit);
 
         }, error => {
@@ -561,7 +564,7 @@ export default class ChatRoom extends Listenable {
                 const now = this.connectionTimes['muc.joined']
                     = window.performance.now();
 
-                logger.log('(TIME) MUC joined:\t', now);
+                logger.log('(TIME) MUC joined:\t', this.myroomjid);
 
                 // set correct initial state of locked
                 if (this.password) {
@@ -1192,6 +1195,8 @@ export default class ChatRoom extends Listenable {
         .c('reason').t(`Your affiliation has been changed to '${affiliation}'.`)
         .up().up().up();
 
+        console.log("---elem setAffiliation: ", grantIQ)
+
         this.connection.sendIQ(
             grantIQ,
             result => logger.log('Set affiliation of participant with jid: ', jid, 'to', affiliation, result),
@@ -1210,6 +1215,8 @@ export default class ChatRoom extends Listenable {
             .c('item', { nick: Strophe.getResourceFromJid(jid),
                 role: 'none' })
             .c('reason').t(reason).up().up().up();
+        
+        console.log("---elem kick: ", kickIQ)
 
         this.connection.sendIQ(
             kickIQ,
@@ -1228,6 +1235,8 @@ export default class ChatRoom extends Listenable {
      */
     lockRoom(key, onSuccess, onError, onNotSupported) {
         // http://xmpp.org/extensions/xep-0045.html#roomconfig
+        console.log("---elem lockRoom: ")
+        
         this.connection.sendIQ(
             $iq({
                 to: this.roomjid,
@@ -1325,6 +1334,7 @@ export default class ChatRoom extends Listenable {
             // that's why we will send iq per member
             Object.values(this.members).forEach(m => {
                 if (m.jid && !MEMBERS_AFFILIATIONS.includes(m.affiliation)) {
+
                     this.xmpp.connection.sendIQ(
                         $iq({
                             to: this.roomjid,
@@ -1340,6 +1350,7 @@ export default class ChatRoom extends Listenable {
         }
 
         const errorCallback = onError ? onError : () => {}; // eslint-disable-line no-empty-function
+        console.log("---elem setMembersOnly: ")
 
         this.xmpp.connection.sendIQ(
             $iq({
@@ -1740,6 +1751,7 @@ export default class ChatRoom extends Listenable {
             })
             .t(mute.toString())
             .up();
+        console.log("---elem muteParticipant: ")
 
         this.connection.sendIQ(
             iqToFocus,

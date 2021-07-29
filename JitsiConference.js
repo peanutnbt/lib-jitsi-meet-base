@@ -2057,6 +2057,8 @@ JitsiConference.prototype._acceptJvbIncomingCall = function(
     }
 
     // Open a channel with the videobridge.
+
+    console.log("---_acceptJvbIncomingCall -> open bridge--with offer iq-jingleOffer: ", jingleOffer)
     this._setBridgeChannel(jingleOffer, jingleSession.peerconnection);
 
     const localTracks = this._getInitialLocalTracks();
@@ -2130,9 +2132,11 @@ JitsiConference.prototype._setBridgeChannel = function(offerIq, pc) {
 
     if (wsUrl) {
         // If the offer contains a websocket use it.
+        console.log("---------_setBridgeChannel websocket-----------: ", wsUrl)
         this.rtc.initializeBridgeChannel(null, wsUrl);
     } else {
         // Otherwise, fall back to an attempt to use SCTP.
+        console.log("---------_setBridgeChannel SCTP-----------")
         this.rtc.initializeBridgeChannel(pc, null);
     }
 };
@@ -2667,7 +2671,10 @@ JitsiConference.prototype.sendMessage = function(
         to = '',
         sendThroughVideobridge = false) {
     const messageType = typeof message;
-
+    // if(sendThroughVideobridge)
+    //     // console.log("--------sendMessage- va -send the message through jitsi-videobridge (via the COLIBRI data channel or web socket---: ", message)
+    // else 
+    //     console.log("--------sendMessage- va -send the message through XMPP MUC---: ", message)
     // Through videobridge we support only objects. Through XMPP we support
     // objects (encapsulated in a specific JSON format) and strings (i.e.
     // regular chat messages).

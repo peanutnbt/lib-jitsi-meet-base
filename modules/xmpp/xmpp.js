@@ -597,6 +597,7 @@ export default class XMPP extends Listenable {
      */
     connect(jid, password) {
         if (!jid) {
+
             const { anonymousdomain, domain } = this.options.hosts;
             let configDomain = anonymousdomain || domain;
 
@@ -620,7 +621,10 @@ export default class XMPP extends Listenable {
 
             // eslint-disable-next-line no-param-reassign
             jid = configDomain || (location && location.hostname);
+            console.log("----jid: ", jid)
+
         }
+        console.log("----jid2: ", jid)
 
         return this._connect(jid, password);
     }

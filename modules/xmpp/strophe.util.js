@@ -54,7 +54,7 @@ export default function() {
         // Strophe log entry about secondary request timeout does not mean that
         // it's a final failure(the request will be restarted), so we lower it's
         // level here to a warning.
-        logger.trace('Strophe', level, msg);
+        // logger.trace('Strophe', level, msg);
         if (typeof msg === 'string'
                 && msg.indexOf('Request ') !== -1
                 && msg.indexOf('timed out (secondary), restarting') !== -1) {
@@ -69,7 +69,7 @@ export default function() {
             // Strophe's DEBUG level.
             if (lastErrorStatus !== -1
                     && resetLastErrorStatusRegExpr.test(msg)) {
-                logger.debug('Reset lastErrorStatus');
+                // logger.debug('Reset lastErrorStatus');
                 lastErrorStatus = -1;
             }
             break;
@@ -79,15 +79,15 @@ export default function() {
 
             if (errStatusCapture && errStatusCapture.length === 2) {
                 lastErrorStatus = parseInt(errStatusCapture[1], 10);
-                logger.debug(`lastErrorStatus set to: ${lastErrorStatus}`);
+                // logger.debug(`lastErrorStatus set to: ${lastErrorStatus}`);
             }
             break;
         case Strophe.LogLevel.ERROR:
         case Strophe.LogLevel.FATAL:
             // eslint-disable-next-line no-param-reassign
             msg = `Strophe: ${msg}`;
-            GlobalOnErrorHandler.callErrorHandler(new Error(msg));
-            logger.error(msg);
+            // GlobalOnErrorHandler.callErrorHandler(new Error(msg));
+            // logger.error(msg);
             break;
         }
 

@@ -391,6 +391,7 @@ export default class JitsiLocalTrack extends JitsiTrack {
         }
 
         const conference = this.conference;
+        console.log("setEffect----: ", conference)
 
         if (!conference) {
             this._switchStreamEffect(effect);
@@ -702,6 +703,8 @@ export default class JitsiLocalTrack extends JitsiTrack {
      * @param conference the JitsiConference object
      */
     _setConference(conference) {
+        console.log("----------_setConference3: ", new Date().getTime())
+
         this.conference = conference;
 
         // We want to keep up with postponed events which should have been fired

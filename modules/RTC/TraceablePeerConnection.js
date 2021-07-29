@@ -71,6 +71,8 @@ export default function TraceablePeerConnection(
         isP2P,
         options) {
 
+    logger.info(`Create new TPC`);
+    
     /**
      * Indicates whether or not this peer connection instance is actively
      * sending/receiving audio media. When set to <tt>false</tt> the SDP audio
@@ -300,7 +302,7 @@ export default function TraceablePeerConnection(
 
     // override as desired
     this.trace = (what, info) => {
-        logger.debug(what, info);
+        // logger.debug(what, info);
 
         this.updateLog.push({
             time: new Date(),
@@ -310,9 +312,11 @@ export default function TraceablePeerConnection(
     };
     this.onicecandidate = null;
     this.peerconnection.onicecandidate = event => {
-        this.trace(
-            'onicecandidate',
-            JSON.stringify(event.candidate, null, ' '));
+        // this.trace(
+        //     'onicecandidate',
+        //     JSON.stringify(event.candidate, null, ' '));
+
+        console.log("-------onicecandidate------------: ", event.candidate)
 
         if (this.onicecandidate !== null) {
             this.onicecandidate(event);
@@ -323,7 +327,7 @@ export default function TraceablePeerConnection(
     if (this._usesUnifiedPlan) {
         this.onTrack = evt => {
             const stream = evt.streams[0];
-
+            console.log("-----onTrack-----: ", stream)
             this._remoteTrackAdded(stream, evt.track, evt.transceiver);
             stream.addEventListener('removetrack', e => {
                 this._remoteTrackRemoved(stream, e.track);
@@ -336,28 +340,35 @@ export default function TraceablePeerConnection(
     }
     this.onsignalingstatechange = null;
     this.peerconnection.onsignalingstatechange = event => {
-        this.trace('onsignalingstatechange', this.signalingState);
+        // this.trace('onsignalingstatechange', this.signalingState);
+        console.log("------onsignalingstatechange---------: ", this.signalingState)
         if (this.onsignalingstatechange !== null) {
             this.onsignalingstatechange(event);
         }
     };
     this.oniceconnectionstatechange = null;
     this.peerconnection.oniceconnectionstatechange = event => {
-        this.trace('oniceconnectionstatechange', this.iceConnectionState);
+        // this.trace('oniceconnectionstatechange', this.iceConnectionState);
+        console.log("------oniceconnectionstatechange---------: ", this.iceConnectionState)
+
         if (this.oniceconnectionstatechange !== null) {
             this.oniceconnectionstatechange(event);
         }
     };
     this.onnegotiationneeded = null;
     this.peerconnection.onnegotiationneeded = event => {
-        this.trace('onnegotiationneeded');
+        // this.trace('onnegotiationneeded');
+        console.log("------onnegotiationneeded---------")
+
         if (this.onnegotiationneeded !== null) {
             this.onnegotiationneeded(event);
         }
     };
     this.ondatachannel = null;
     this.peerconnection.ondatachannel = event => {
-        this.trace('ondatachannel');
+        // this.trace('ondatachannel');
+        console.log("------ondatachannel---------")
+
         if (this.ondatachannel !== null) {
             this.ondatachannel(event);
         }
@@ -383,7 +394,6 @@ export default function TraceablePeerConnection(
         }, 1000);
     }
 
-    logger.info(`Create new ${this}`);
 }
 
 /* eslint-enable max-params */
@@ -500,6 +510,7 @@ TraceablePeerConnection.prototype._getReceiversByEndpointIds = function(endpoint
             && receiver.track.kind === mediaType
             && remoteTrackIds.find(trackId => trackId === receiver.track.id));
 
+    console.log("-------_getReceiversByEndpointIds---:", receivers)
     return receivers;
 };
 
@@ -775,7 +786,7 @@ TraceablePeerConnection.prototype.getSsrcByTrackId = function(id) {
  */
 TraceablePeerConnection.prototype._remoteStreamAdded = function(stream) {
     const streamId = RTC.getStreamID(stream);
-
+    connsole.log("----------_remoteStreamAdded---------: ", stream)
     if (!RTC.isUserStreamById(streamId)) {
         logger.info(`${this} ignored remote 'stream added' event for non-user stream[id=${streamId}]`);
 
@@ -1786,6 +1797,7 @@ TraceablePeerConnection.prototype.addTrackUnmute = function(track) {
  */
 TraceablePeerConnection.prototype._addStream = function(mediaStream) {
     this.peerconnection.addStream(mediaStream);
+    console.log("----TraceablePeerConnection.prototype._addStream---:", mediaStream)
     this._addedStreams.push(mediaStream);
 };
 
@@ -2243,7 +2255,7 @@ TraceablePeerConnection.prototype.setLocalDescription = function(description) {
     return new Promise((resolve, reject) => {
         this.peerconnection.setLocalDescription(localSdp)
             .then(() => {
-                this.trace('setLocalDescriptionOnSuccess');
+                console.log("----setLocalDescriptionOnSuccess: ", localSdp.sdp.candidate)
                 const localUfrag = SDPUtil.getUfrag(localSdp.sdp);
 
                 if (localUfrag !== this.localUfrag) {
@@ -2324,6 +2336,7 @@ TraceablePeerConnection.prototype.setSenderVideoDegradationPreference = function
     logger.info(`${this} Setting a degradation preference [preference=${preference},track=${localVideoTrack}`);
     parameters.degradationPreference = preference;
     this.tpcUtils.updateEncodingsResolution(parameters);
+    console.log("parametersparameters2: ", parameters)
 
     return videoSender.setParameters(parameters);
 };
@@ -2456,9 +2469,9 @@ TraceablePeerConnection.prototype.setRemoteDescription = function(description) {
 
         // eslint-disable-next-line no-param-reassign
         description = this.interop.toUnifiedPlan(description, currentDescription);
-        this.trace(
-            'setRemoteDescription::postTransform (Unified)',
-            dumpSDP(description));
+        // this.trace(
+        //     'setRemoteDescription::postTransform (Unified)',
+        //     dumpSDP(description));
 
         if (this.isSimulcastOn()) {
             // eslint-disable-next-line no-param-reassign
@@ -2466,9 +2479,9 @@ TraceablePeerConnection.prototype.setRemoteDescription = function(description) {
 
             // eslint-disable-next-line no-param-reassign
             description = this.tpcUtils.insertUnifiedPlanSimulcastReceive(description);
-            this.trace(
-                'setRemoteDescription::postTransform (sim receive)',
-                dumpSDP(description));
+            // this.trace(
+            //     'setRemoteDescription::postTransform (sim receive)',
+            //     dumpSDP(description));
         }
     }
 
@@ -2480,7 +2493,8 @@ TraceablePeerConnection.prototype.setRemoteDescription = function(description) {
     return new Promise((resolve, reject) => {
         this.peerconnection.setRemoteDescription(description)
             .then(() => {
-                this.trace('setRemoteDescriptionOnSuccess');
+                console.log("----setRemoteDescription----:", description.sdp)
+
                 const remoteUfrag = SDPUtil.getUfrag(description.sdp);
 
                 if (remoteUfrag !== this.remoteUfrag) {
@@ -2765,7 +2779,7 @@ TraceablePeerConnection.prototype._createOfferOrAnswer = function(
         constraints) {
     const logName = isOffer ? 'Offer' : 'Answer';
 
-    this.trace(`create${logName}`, JSON.stringify(constraints, null, ' '));
+    // this.trace(`create${logName}`, JSON.stringify(constraints, null, ' '));
 
     const handleSuccess = (resultSdp, resolveFn, rejectFn) => {
         try {
@@ -2822,7 +2836,7 @@ TraceablePeerConnection.prototype._createOfferOrAnswer = function(
             const ssrcMap = this._extractSSRCMap(resultSdp);
 
             this._processLocalSSRCsMap(ssrcMap);
-
+            console.log("----resultSdp---_createOfferOrAnswer")
             resolveFn(resultSdp);
         } catch (e) {
             this.trace(`create${logName}OnError`, e);
@@ -2879,8 +2893,10 @@ TraceablePeerConnection.prototype._createOfferOrAnswer = function(
         let oaPromise;
 
         if (isOffer) {
+            console.log("------createOffer----:", )
             oaPromise = this.peerconnection.createOffer(constraints);
         } else {
+            console.log("------createAnswer----:", )
             oaPromise = this.peerconnection.createAnswer(constraints);
         }
 
@@ -2952,6 +2968,7 @@ TraceablePeerConnection.prototype.addIceCandidate = function(candidate) {
         usernameFragment: candidate.usernameFragment
     }, null, ' '));
 
+    console.log("-------addIceCandidate: ", candidate.candidate)
     return this.peerconnection.addIceCandidate(candidate);
 };
 

@@ -736,8 +736,8 @@ class RTCUtils extends Listenable {
                     videoType: VideoType.CAMERA,
                     effects: otherOptions.effects
                 });
-                console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice888888888888: ", mediaStreamsMetaData2)
-                console.log("123: ", stream_default)
+                // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice888888888888: ", mediaStreamsMetaData2)
+                // console.log("123: ", stream_default)
                 try {
                     mediaStreamsMetaData.push({
                         stream: stream_default.streams[0],
@@ -745,7 +745,7 @@ class RTCUtils extends Listenable {
                         videoType: VideoType.CAMERA,
                         effects: otherOptions.effects
                     })
-                    console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice88888888888811111: ", mediaStreamsMetaData)
+                    // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice88888888888811111: ", mediaStreamsMetaData)
                 } catch (error) {
                     console.log("errrrrrrrrrrr: ", error)
                 }

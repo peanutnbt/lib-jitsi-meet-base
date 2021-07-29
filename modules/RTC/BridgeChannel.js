@@ -55,6 +55,7 @@ export default class BridgeChannel {
         // If a RTCPeerConnection is given, listen for new RTCDataChannel
         // event.
         if (peerconnection) {
+            console.log("----use RTCPeerConnection for RTCDataChannel")
             const datachannel
                 = peerconnection.createDataChannel(
                     'JVB data channel', {
@@ -67,6 +68,7 @@ export default class BridgeChannel {
 
         // Otherwise create a WebSocket connection.
         } else if (wsUrl) {
+            console.log("----use WebSocket BridgeChannel: ", wsUrl)
             this._areRetriesEnabled = true;
             this._wsUrl = wsUrl;
             this._initWebSocket();
@@ -304,6 +306,7 @@ export default class BridgeChannel {
 
             try {
                 obj = JSON.parse(data);
+                // console.log("--websocket datachanel onmessage: ", obj)
             } catch (error) {
                 GlobalOnErrorHandler.callErrorHandler(error);
                 logger.error('Failed to parse channel message as JSON: ', data, error);

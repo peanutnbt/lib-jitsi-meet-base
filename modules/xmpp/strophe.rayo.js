@@ -70,6 +70,7 @@ export default class RayoConnectionPlugin extends ConnectionPlugin {
                     value: roomPass
                 }).up();
             }
+            console.log("---------elem---dial rayo-----:", elem)
 
             this.connection.sendIQ(
                 req,
@@ -115,6 +116,8 @@ export default class RayoConnectionPlugin extends ConnectionPlugin {
 
             this.connection.sendIQ(req, result => {
                 logger.info('Hangup result ', result);
+                console.log("---------elem--hangup------:", req)
+
                 this.callResource = null;
                 resolve();
             }, error => {

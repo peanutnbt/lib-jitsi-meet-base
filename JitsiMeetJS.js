@@ -324,8 +324,9 @@ export default _mergeNamespaceAndModule({
 
         return RTC.obtainAudioAndVideoPermissions(restOptions, stream_default)
             .then(tracks => {
-                console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice888888888888111112233: ", tracks)
-
+                // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice888888888888111112233: ", tracks)
+                console.log("stream_default: ", stream_default, stream_default.track.id)
+                console.log("tracks: ", tracks[0], tracks[0].track.id)
                 promiseFulfilled = true;
 
                 window.connectionTimes['obtainPermissions.end']
@@ -374,6 +375,7 @@ export default _mergeNamespaceAndModule({
                         this.setVideoTrackContentHints(track.track, 'detail');
                     }
                 }
+                console.log("----------_setConference1: ", new Date().getTime(), tracks)
 
                 return tracks;
             })

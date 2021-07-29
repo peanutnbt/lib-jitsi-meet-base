@@ -63,7 +63,7 @@ export default class XmppConnection extends Listenable {
 
         this._stropheConn = new Strophe.Connection(serviceUrl);
         this._usesWebsocket = serviceUrl.startsWith('ws:') || serviceUrl.startsWith('wss:');
-
+        console.log("------XmppConnection is useWebsocket-and-serviceUrl-: ", this._usesWebsocket, serviceUrl)
         // The default maxRetries is 5, which is too long.
         this._stropheConn.maxRetries = 3;
 
@@ -248,6 +248,7 @@ export default class XmppConnection extends Listenable {
      * @returns {void}
      */
     connect(jid, pass, callback, ...args) {
+        console.log("------jid ---connect: ", jid)
         this._stropheConn.connect(jid, pass, this._stropheConnectionCb.bind(this, callback), ...args);
     }
 
@@ -494,6 +495,7 @@ export default class XmppConnection extends Listenable {
 
             return;
         }
+        // console.log("---------elem--XmppConnection------:", elem)
 
         return this._stropheConn.sendIQ(elem, callback, errback, timeout);
     }

@@ -304,6 +304,8 @@ export default class JingleConnectionPlugin extends ConnectionPlugin {
         // peerconnection.
         // TODO: implement refresh via updateIce as described in
         //      https://code.google.com/p/webrtc/issues/detail?id=1650
+        console.log("---------elem--getStunAndTurnCredentials------:")
+
         this.connection.sendIQ(
             $iq({ type: 'get',
                 to: this.xmpp.options.hosts.domain })

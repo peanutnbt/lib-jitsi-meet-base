@@ -731,6 +731,7 @@ export default class JingleSessionPC extends JingleSession {
         // might merge last-candidate notification into this, but it is called
         // a lot later. See webrtc issue #2340
         // logger.log('was this the last candidate', this.lasticecandidate);
+        console.log("----elem -sendIceCandidates-: ", cand)
         this.connection.sendIQ(
             cand, null, this.newJingleErrorHandler(cand), IQ_TIMEOUT);
     }
@@ -778,6 +779,7 @@ export default class JingleSessionPC extends JingleSession {
      * {@inheritDoc}
      */
     addIceCandidates(elem) {
+        console.log("---------addIceCandidates-------------: ", elem)
         if (this.peerconnection.signalingState === 'closed') {
             logger.warn(`${this} Ignored add ICE candidate when in closed state`);
 
@@ -992,7 +994,9 @@ export default class JingleSessionPC extends JingleSession {
             init,
             this.isInitiator ? 'initiator' : 'responder');
         init = init.tree();
-        logger.info(`${this} Session-initiate: `, init);
+        // logger.info(`${this} Session-initiate: `, init);
+        console.log("----elem -sendSessionInitiate-: ", init)
+
         this.connection.sendIQ(init,
             () => {
                 logger.info(`${this} Got RESULT for "session-initiate"`);
@@ -1260,7 +1264,9 @@ export default class JingleSessionPC extends JingleSession {
 
         // Calling tree() to print something useful
         accept = accept.tree();
-        logger.info(`${this} Sending session-accept`, accept);
+        // logger.info(`${this} Sending session-accept`, accept);
+        console.log("----elem -Sending session-accept-: ", success)
+
         this.connection.sendIQ(accept,
             success,
             this.newJingleErrorHandler(accept, error => {
@@ -1325,7 +1331,8 @@ export default class JingleSessionPC extends JingleSession {
                 .t(maxFrameHeight);
         }
 
-        logger.info(`${this} sending content-modify, video senders: ${senders}, max frame height: ${maxFrameHeight}`);
+        // logger.info(`${this} sending content-modify, video senders: ${senders}, max frame height: ${maxFrameHeight}`);
+        console.log("----elem -sendContentModify-: ", sessionModify)
 
         this.connection.sendIQ(
             sessionModify,
@@ -1394,7 +1401,8 @@ export default class JingleSessionPC extends JingleSession {
 
         // Calling tree() to print something useful to the logger
         transportAccept = transportAccept.tree();
-        logger.info(`${this} Sending transport-accept: `, transportAccept);
+        // logger.info(`${this} Sending transport-accept: `, transportAccept);
+        console.log("----elem -sendTransportAccept-: ", success)
 
         this.connection.sendIQ(transportAccept,
             success,
@@ -1426,7 +1434,8 @@ export default class JingleSessionPC extends JingleSession {
             });
 
         transportReject = transportReject.tree();
-        logger.info(`${this} Sending 'transport-reject'`, transportReject);
+        // logger.info(`${this} Sending 'transport-reject'`, transportReject);
+        console.log("----elem -sendTransportReject-: ", success)
 
         this.connection.sendIQ(transportReject,
             success,
@@ -1530,7 +1539,9 @@ export default class JingleSessionPC extends JingleSession {
 
             // Calling tree() to print something useful
             sessionTerminate = sessionTerminate.tree();
-            logger.info(`${this} Sending session-terminate`, sessionTerminate);
+            // logger.info(`${this} Sending session-terminate`, sessionTerminate); 
+            console.log("----elem -terminate-: ", sessionTerminate)
+
             this.connection.sendIQ(
                 sessionTerminate,
                 success,
@@ -2062,8 +2073,10 @@ export default class JingleSessionPC extends JingleSession {
 
                             // FIXME set all sender parameters in one go?
                             // Set the degradation preference on the new video sender.
-                            return this.peerconnection.setSenderVideoDegradationPreference()
-                                .then(() => this.peerconnection.setSenderVideoConstraint())
+                            // return this.peerconnection.setSenderVideoDegradationPreference()
+                            //     .then(() => this.peerconnection.setSenderVideoConstraint())
+                            //     .then(() => this.peerconnection.setMaxBitRate());
+                            return this.peerconnection.setSenderVideoConstraint()
                                 .then(() => this.peerconnection.setMaxBitRate());
                         }
                     });
@@ -2213,7 +2226,7 @@ export default class JingleSessionPC extends JingleSession {
                 // the video sender if needed.
                 if (track.isVideoTrack() && browser.doesVideoMuteByStreamRemove()) {
                     return this.setSenderMaxBitrates()
-                        .then(() => this.setSenderVideoDegradationPreference())
+                        // .then(() => this.setSenderVideoDegradationPreference())
                         .then(() => this.setSenderVideoConstraint());
                 }
             });
@@ -2499,7 +2512,9 @@ export default class JingleSessionPC extends JingleSession {
         const removedAnySSRCs = sdpDiffer.toJingle(remove);
 
         if (removedAnySSRCs) {
-            logger.info(`${this} Sending source-remove`, remove.tree());
+            // logger.info(`${this} Sending source-remove`, remove.tree());
+            console.log("----elem -notifyMySSRCUpdate-: ", remove)
+
             this.connection.sendIQ(
                 remove, null,
                 this.newJingleErrorHandler(remove), IQ_TIMEOUT);
@@ -2520,7 +2535,9 @@ export default class JingleSessionPC extends JingleSession {
         const containsNewSSRCs = sdpDiffer.toJingle(add);
 
         if (containsNewSSRCs) {
-            logger.info(`${this} Sending source-add`, add.tree());
+            // logger.info(`${this} Sending source-add`, add.tree());
+            console.log("----elem -notifyMySSRCUpdate-: ", add)
+            
             this.connection.sendIQ(
                 add, null, this.newJingleErrorHandler(add), IQ_TIMEOUT);
         }
