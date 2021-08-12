@@ -60,7 +60,7 @@ function _createLocalTracks(mediaStreamMetaData = []) {
         } = metaData;
         console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice8888888888881111122: ", mediaStreamMetaData)
 
-        const { deviceId, facingMode } = track.getSettings();
+        // const { deviceId, facingMode } = track.getSettings();
 
         // FIXME Move rtcTrackIdCounter to a static method in JitsiLocalTrack
         // so RTC does not need to handle ID management. This move would be
@@ -68,8 +68,8 @@ function _createLocalTracks(mediaStreamMetaData = []) {
         rtcTrackIdCounter = safeCounterIncrement(rtcTrackIdCounter);
 
         return new JitsiLocalTrack({
-            deviceId,
-            facingMode,
+            undefined,
+            undefined,
             mediaType: track.kind,
             rtcId: rtcTrackIdCounter,
             sourceId,
@@ -846,6 +846,7 @@ export default class RTC extends Listenable {
      */
     setAudioLevel(tpc, ssrc, audioLevel, isLocal) {
         const track = tpc.getTrackBySSRC(ssrc);
+        console.log("----localSSRCs-1---:", ssrc)
 
         if (!track) {
             return;

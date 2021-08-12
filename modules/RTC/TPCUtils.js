@@ -241,6 +241,7 @@ export class TPCUtils {
             // Use pc.addTrack() for responder case so that we can re-use the m-lines that were created
             // when setRemoteDescription was called. pc.addTrack() automatically  attaches to any existing
             // unused "recv-only" transceiver.
+            console.log("----addLocalTrack-tpcutils--: ", track)
             this.pc.peerconnection.addTrack(track);
         }
     }
@@ -340,6 +341,7 @@ export class TPCUtils {
             return transceiver.sender.replaceTrack(track)
                 .then(() => {
                     const ssrc = this.pc.localSSRCs.get(oldTrack.rtcId);
+                    console.log("----localSSRCs-3---:", ssrc)
 
                     this.pc.localTracks.delete(oldTrack.rtcId);
                     this.pc.localSSRCs.delete(oldTrack.rtcId);

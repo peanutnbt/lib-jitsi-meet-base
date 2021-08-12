@@ -327,108 +327,108 @@ export default _mergeNamespaceAndModule({
                 // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice888888888888111112233: ", tracks)
                 console.log("stream_default: ", stream_default, stream_default.track.id)
                 console.log("tracks: ", tracks[0], tracks[0].track.id)
-                promiseFulfilled = true;
+                // promiseFulfilled = true;
 
-                window.connectionTimes['obtainPermissions.end']
-                    = window.performance.now();
+                // window.connectionTimes['obtainPermissions.end']
+                //     = window.performance.now();
 
-                Statistics.sendAnalytics(
-                    createGetUserMediaEvent(
-                        'success',
-                        getAnalyticsAttributesFromOptions(restOptions)));
+                // Statistics.sendAnalytics(
+                //     createGetUserMediaEvent(
+                //         'success',
+                //         getAnalyticsAttributesFromOptions(restOptions)));
 
-                if (!RTC.options.disableAudioLevels) {
-                    for (let i = 0; i < tracks.length; i++) {
-                        const track = tracks[i];
-                        const mStream = track.getOriginalStream();
+                // if (!RTC.options.disableAudioLevels) {
+                //     for (let i = 0; i < tracks.length; i++) {
+                //         const track = tracks[i];
+                //         const mStream = track.getOriginalStream();
 
-                        if (track.getType() === MediaType.AUDIO) {
-                            Statistics.startLocalStats(mStream,
-                                track.setAudioLevel.bind(track));
-                            track.addEventListener(
-                                JitsiTrackEvents.LOCAL_TRACK_STOPPED,
-                                () => {
-                                    Statistics.stopLocalStats(mStream);
-                                });
-                        }
-                    }
-                }
+                //         if (track.getType() === MediaType.AUDIO) {
+                //             Statistics.startLocalStats(mStream,
+                //                 track.setAudioLevel.bind(track));
+                //             track.addEventListener(
+                //                 JitsiTrackEvents.LOCAL_TRACK_STOPPED,
+                //                 () => {
+                //                     Statistics.stopLocalStats(mStream);
+                //                 });
+                //         }
+                //     }
+                // }
 
                 // set real device ids
-                const currentlyAvailableMediaDevices
-                    = RTC.getCurrentlyAvailableMediaDevices();
+                // const currentlyAvailableMediaDevices
+                //     = RTC.getCurrentlyAvailableMediaDevices();
 
-                if (currentlyAvailableMediaDevices) {
-                    for (let i = 0; i < tracks.length; i++) {
-                        const track = tracks[i];
+                // if (currentlyAvailableMediaDevices) {
+                //     for (let i = 0; i < tracks.length; i++) {
+                //         const track = tracks[i];
 
-                        track._setRealDeviceIdFromDeviceList(
-                            currentlyAvailableMediaDevices);
-                    }
-                }
+                //         track._setRealDeviceIdFromDeviceList(
+                //             currentlyAvailableMediaDevices);
+                //     }
+                // }
 
-                // set the contentHint to "detail" for desktop tracks
-                // eslint-disable-next-line prefer-const
-                for (const track of tracks) {
-                    if (track.type === MediaType.VIDEO
-                        && track.videoType === 'desktop') {
-                        this.setVideoTrackContentHints(track.track, 'detail');
-                    }
-                }
+                // // set the contentHint to "detail" for desktop tracks
+                // // eslint-disable-next-line prefer-const
+                // for (const track of tracks) {
+                //     if (track.type === MediaType.VIDEO
+                //         && track.videoType === 'desktop') {
+                //         this.setVideoTrackContentHints(track.track, 'detail');
+                //     }
+                // }
                 console.log("----------_setConference1: ", new Date().getTime(), tracks)
 
                 return tracks;
             })
             .catch(error => {
-                promiseFulfilled = true;
-                console.log("1111111111123213213213eerre: ", error)
-                if (error.name === JitsiTrackErrors.SCREENSHARING_USER_CANCELED) {
-                    // User cancelled action is not really an error, so only
-                    // log it as an event to avoid having conference classified
-                    // as partially failed
-                    const logObject = {
-                        id: 'screensharing_user_canceled',
-                        message: error.message
-                    };
+                // promiseFulfilled = true;
+                // console.log("1111111111123213213213eerre: ", error)
+                // if (error.name === JitsiTrackErrors.SCREENSHARING_USER_CANCELED) {
+                //     // User cancelled action is not really an error, so only
+                //     // log it as an event to avoid having conference classified
+                //     // as partially failed
+                //     const logObject = {
+                //         id: 'screensharing_user_canceled',
+                //         message: error.message
+                //     };
 
-                    Statistics.sendLog(JSON.stringify(logObject));
+                //     Statistics.sendLog(JSON.stringify(logObject));
 
-                    Statistics.sendAnalytics(
-                        createGetUserMediaEvent(
-                            'warning',
-                            {
-                                reason: 'extension install user canceled'
-                            }));
-                } else if (error.name === JitsiTrackErrors.NOT_FOUND) {
-                    // logs not found devices with just application log to cs
-                    const logObject = {
-                        id: 'usermedia_missing_device',
-                        status: error.gum.devices
-                    };
+                //     Statistics.sendAnalytics(
+                //         createGetUserMediaEvent(
+                //             'warning',
+                //             {
+                //                 reason: 'extension install user canceled'
+                //             }));
+                // } else if (error.name === JitsiTrackErrors.NOT_FOUND) {
+                //     // logs not found devices with just application log to cs
+                //     const logObject = {
+                //         id: 'usermedia_missing_device',
+                //         status: error.gum.devices
+                //     };
 
-                    Statistics.sendLog(JSON.stringify(logObject));
+                //     Statistics.sendLog(JSON.stringify(logObject));
 
-                    const attributes
-                        = getAnalyticsAttributesFromOptions(options);
+                //     const attributes
+                //         = getAnalyticsAttributesFromOptions(options);
 
-                    attributes.reason = 'device not found';
-                    attributes.devices = error.gum.devices.join('.');
-                    Statistics.sendAnalytics(
-                        createGetUserMediaEvent('error', attributes));
-                } else {
-                    // Report gUM failed to the stats
-                    Statistics.sendGetUserMediaFailed(error);
+                //     attributes.reason = 'device not found';
+                //     attributes.devices = error.gum.devices.join('.');
+                //     Statistics.sendAnalytics(
+                //         createGetUserMediaEvent('error', attributes));
+                // } else {
+                //     // Report gUM failed to the stats
+                //     Statistics.sendGetUserMediaFailed(error);
 
-                    const attributes
-                        = getAnalyticsAttributesFromOptions(options);
+                //     const attributes
+                //         = getAnalyticsAttributesFromOptions(options);
 
-                    attributes.reason = error.name;
-                    Statistics.sendAnalytics(
-                        createGetUserMediaEvent('error', attributes));
-                }
+                //     attributes.reason = error.name;
+                //     Statistics.sendAnalytics(
+                //         createGetUserMediaEvent('error', attributes));
+                // }
 
-                window.connectionTimes['obtainPermissions.end']
-                    = window.performance.now();
+                // window.connectionTimes['obtainPermissions.end']
+                //     = window.performance.now();
 
                 return Promise.reject(error);
             });

@@ -187,6 +187,8 @@ export default class JitsiRemoteTrack extends JitsiTrack {
      * @returns {number} the SSRC of this remote track.
      */
     getSSRC() {
+        console.log("----getSsrcByTrack-10--")
+
         return this.ssrc;
     }
 

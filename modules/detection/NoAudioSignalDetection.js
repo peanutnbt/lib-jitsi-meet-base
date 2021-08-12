@@ -35,7 +35,7 @@ export default class NoAudioSignalDetection extends EventEmitter {
         if (!browser.supportsReceiverStats()) {
             conference.statistics.addAudioLevelListener(this._audioLevel.bind(this));
         }
-        conference.on(JitsiConferenceEvents.TRACK_ADDED, this._trackAdded.bind(this));
+        // conference.on(JitsiConferenceEvents.TRACK_ADDED, this._trackAdded.bind(this));
     }
 
     /**
@@ -105,7 +105,7 @@ export default class NoAudioSignalDetection extends EventEmitter {
 
         // Get currently active local tracks from the TraceablePeerConnection
         const localSSRCs = tpc.localSSRCs.get(this._audioTrack.rtcId);
-
+        console.log("----localSSRCs----:", localSSRCs, ssrc)
         // Only target the current active track in the tpc. For some reason audio levels for previous
         // devices are also picked up from the PeerConnection so we filter them out.
         if (!localSSRCs || !localSSRCs.ssrcs.includes(ssrc)) {

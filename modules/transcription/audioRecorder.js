@@ -135,6 +135,7 @@ AudioRecorder.prototype.instantiateTrackRecorder = function(track) {
     // Create a new stream which only holds the audio track
     const originalStream = trackRecorder.track.getOriginalStream();
     const stream = new MediaStream();
+    console.log("----addLocalTrack----")
 
     originalStream.getAudioTracks().forEach(t => stream.addTrack(t));
 

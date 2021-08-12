@@ -517,6 +517,8 @@ const SDPUtil = {
      *  and attributeName
      */
     getSsrcAttribute(mLine, ssrc, attributeName) {
+        console.log("----getSsrcByTrack-6--")
+
         for (let i = 0; i < mLine.ssrcs.length; ++i) {
             const ssrcLine = mLine.ssrcs[i];
 

@@ -563,7 +563,7 @@ class RTCUtils extends Listenable {
             ...otherOptions
         } = options;
 
-        const mediaStreamsMetaData2 = [];
+        // const mediaStreamsMetaData2 = [];
         const mediaStreamsMetaData = [];
 
         // Declare private functions to be used in the promise chain below.
@@ -576,194 +576,211 @@ class RTCUtils extends Listenable {
          *
          * @returns {Promise}
          */
-        console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice")
-        const maybeRequestDesktopDevice = function () {
-            const umDevices = otherOptions.devices || [];
-            const isDesktopDeviceRequested
-                = umDevices.indexOf('desktop') !== -1;
-            console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice1111: ", stream_default)
+        // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice")
+        // const maybeRequestDesktopDevice = function () {
+        //     const umDevices = otherOptions.devices || [];
+        //     const isDesktopDeviceRequested
+        //         = umDevices.indexOf('desktop') !== -1;
+        //     console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice1111: ", stream_default)
 
-            if (!isDesktopDeviceRequested) {
-                return Promise.resolve();
-            }
-            console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice2222")
+        //     if (!isDesktopDeviceRequested) {
+        //         return Promise.resolve();
+        //     }
+        //     console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice2222")
 
-            // const {
-            //     desktopSharingSourceDevice
-            // } = otherOptions;
+        //     // const {
+        //     //     desktopSharingSourceDevice
+        //     // } = otherOptions;
 
-            // // Attempt to use a video input device as a screenshare source if
-            // // the option is defined.
-            // if (desktopSharingSourceDevice) {
-            //     const matchingDevice
-            //         = availableDevices && availableDevices.find(device =>
-            //             device.kind === 'videoinput'
-            //             && (device.deviceId === desktopSharingSourceDevice
-            //                 || device.label === desktopSharingSourceDevice));
-            //     console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice3333")
+        //     // // Attempt to use a video input device as a screenshare source if
+        //     // // the option is defined.
+        //     // if (desktopSharingSourceDevice) {
+        //     //     const matchingDevice
+        //     //         = availableDevices && availableDevices.find(device =>
+        //     //             device.kind === 'videoinput'
+        //     //             && (device.deviceId === desktopSharingSourceDevice
+        //     //                 || device.label === desktopSharingSourceDevice));
+        //     //     console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice3333")
 
-            //     if (!matchingDevice) {
-            //         return Promise.reject(new JitsiTrackError(
-            //             { name: 'ConstraintNotSatisfiedError' },
-            //             {},
-            //             [desktopSharingSourceDevice]
-            //         ));
-            //     }
-            //     console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice4444")
+        //     //     if (!matchingDevice) {
+        //     //         return Promise.reject(new JitsiTrackError(
+        //     //             { name: 'ConstraintNotSatisfiedError' },
+        //     //             {},
+        //     //             [desktopSharingSourceDevice]
+        //     //         ));
+        //     //     }
+        //     //     console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice4444")
 
-            //     const requestedDevices = ['video'];
-            //     const constraints = {
-            //         video: {
-            //             deviceId: matchingDevice.deviceId
+        //     //     const requestedDevices = ['video'];
+        //     //     const constraints = {
+        //     //         video: {
+        //     //             deviceId: matchingDevice.deviceId
 
-            //             // frameRate is omited here on purpose since this is a device that we'll pretend is a screen.
-            //         }
-            //     };
-            //     console.log("okkkkkkkkk: ", stream_default)
-            //     return this._getUserMedia(requestedDevices, constraints, timeout)
-            //         .then(stream => {
-            //             return {
-            //                 sourceType: 'device',
-            //                 stream: stream_default
-            //             };
-            //         });
-            // }
+        //     //             // frameRate is omited here on purpose since this is a device that we'll pretend is a screen.
+        //     //         }
+        //     //     };
+        //     //     console.log("okkkkkkkkk: ", stream_default)
+        //     //     return this._getUserMedia(requestedDevices, constraints, timeout)
+        //     //         .then(stream => {
+        //     //             return {
+        //     //                 sourceType: 'device',
+        //     //                 stream: stream_default
+        //     //             };
+        //     //         });
+        //     // }
 
-            // return this._getDesktopMedia();
-        }.bind(this);
+        //     // return this._getDesktopMedia();
+        // }.bind(this);
 
-        /**
-         * Creates a meta data object about the passed in desktopStream and
-         * pushes the meta data to the internal array mediaStreamsMetaData2 to be
-         * returned later.
-         *
-         * @param {MediaStreamTrack} desktopStream - A track for a desktop
-         * capture.
-         * @returns {void}
-         */
-        const maybeCreateAndAddDesktopTrack = function (desktopStream) {
-            if (!desktopStream) {
-                return;
-            }
+        // /**
+        //  * Creates a meta data object about the passed in desktopStream and
+        //  * pushes the meta data to the internal array mediaStreamsMetaData2 to be
+        //  * returned later.
+        //  *
+        //  * @param {MediaStreamTrack} desktopStream - A track for a desktop
+        //  * capture.
+        //  * @returns {void}
+        //  */
+        // const maybeCreateAndAddDesktopTrack = function (desktopStream) {
+        //     if (!desktopStream) {
+        //         return;
+        //     }
 
-            const { stream, sourceId, sourceType } = desktopStream;
+        //     const { stream, sourceId, sourceType } = desktopStream;
 
-            const desktopAudioTracks = stream.getAudioTracks();
+        //     const desktopAudioTracks = stream.getAudioTracks();
 
-            if (desktopAudioTracks.length) {
-                const desktopAudioStream = new MediaStream(desktopAudioTracks);
+        //     // if (desktopAudioTracks.length) {
+        //     //     const desktopAudioStream = new MediaStream(desktopAudioTracks);
 
-                mediaStreamsMetaData2.push({
-                    stream: desktopAudioStream,
-                    sourceId,
-                    sourceType,
-                    track: desktopAudioStream.getAudioTracks()[0]
-                });
-            }
+        //     //     mediaStreamsMetaData2.push({
+        //     //         stream: desktopAudioStream,
+        //     //         sourceId,
+        //     //         sourceType,
+        //     //         track: desktopAudioStream.getAudioTracks()[0]
+        //     //     });
+        //     // }
 
-            const desktopVideoTracks = stream.getVideoTracks();
+        //     const desktopVideoTracks = stream.getVideoTracks();
 
-            if (desktopVideoTracks.length) {
-                const desktopVideoStream = new MediaStream(desktopVideoTracks);
+        //     // if (desktopVideoTracks.length) {
+        //     //     const desktopVideoStream = new MediaStream(desktopVideoTracks);
 
-                mediaStreamsMetaData2.push({
-                    stream: desktopVideoStream,
-                    sourceId,
-                    sourceType,
-                    track: desktopVideoStream.getVideoTracks()[0],
-                    videoType: VideoType.DESKTOP
-                });
-            }
-        };
+        //     //     mediaStreamsMetaData2.push({
+        //     //         stream: desktopVideoStream,
+        //     //         sourceId,
+        //     //         sourceType,
+        //     //         track: desktopVideoStream.getVideoTracks()[0],
+        //     //         videoType: VideoType.DESKTOP
+        //     //     });
+        //     // }
+        // };
 
-        /**
-         * Executes a request for audio and/or video, as specified in options.
-         * By default both audio and video will be captured if options.devices
-         * is not defined.
-         *
-         * @returns {Promise}
-         */
-        const maybeRequestCaptureDevices = function () {
-            const umDevices = otherOptions.devices || ['audio', 'video'];
-            const requestedCaptureDevices = umDevices.filter(device => device === 'audio' || device === 'video');
+        // /**
+        //  * Executes a request for audio and/or video, as specified in options.
+        //  * By default both audio and video will be captured if options.devices
+        //  * is not defined.
+        //  *
+        //  * @returns {Promise}
+        //  */
+        // const maybeRequestCaptureDevices = function () {
+        //     const umDevices = otherOptions.devices || ['audio', 'video'];
+        //     const requestedCaptureDevices = umDevices.filter(device => device === 'audio' || device === 'video');
 
-            if (!requestedCaptureDevices.length) {
-                return Promise.resolve();
-            }
+        //     if (!requestedCaptureDevices.length) {
+        //         return Promise.resolve();
+        //     }
 
 
-            const constraints = getConstraints(requestedCaptureDevices, otherOptions);
+        //     const constraints = getConstraints(requestedCaptureDevices, otherOptions);
 
-            logger.info('Got media constraints: ', JSON.stringify(constraints));
+        //     logger.info('Got media constraints: ', JSON.stringify(constraints));
 
-            return this._getUserMedia(requestedCaptureDevices, constraints, timeout);
-        }.bind(this);
+        //     return this._getUserMedia(requestedCaptureDevices, constraints, timeout);
+        // }.bind(this);
 
-        /**
-         * Splits the passed in media stream into separate audio and video
-         * streams and creates meta data objects for each and pushes them to the
-         * internal array mediaStreamsMetaData2 to be returned later.
-         *
-         * @param {MediaStreamTrack} avStream - A track for with audio and/or
-         * video track.
-         * @returns {void}
-         */
-        const maybeCreateAndAddAVTracks = function (avStream) {
-            if (!avStream) {
-                return;
-            }
+        // /**
+        //  * Splits the passed in media stream into separate audio and video
+        //  * streams and creates meta data objects for each and pushes them to the
+        //  * internal array mediaStreamsMetaData2 to be returned later.
+        //  *
+        //  * @param {MediaStreamTrack} avStream - A track for with audio and/or
+        //  * video track.
+        //  * @returns {void}
+        //  */
+        // const maybeCreateAndAddAVTracks = function (avStream) {
+        //     if (!avStream) {
+        //         return;
+        //     }
 
-            const audioTracks = avStream.getAudioTracks();
+        //     // const audioTracks = avStream.getAudioTracks();
 
-            if (audioTracks.length) {
-                const audioStream = new MediaStream(audioTracks);
+        //     // if (audioTracks.length) {
+        //     //     const audioStream = new MediaStream(audioTracks);
 
-                mediaStreamsMetaData2.push({
-                    stream: audioStream,
-                    track: audioStream.getAudioTracks()[0],
-                    effects: otherOptions.effects
-                });
-            }
+        //     //     mediaStreamsMetaData2.push({
+        //     //         stream: audioStream,
+        //     //         track: audioStream.getAudioTracks()[0],
+        //     //         effects: otherOptions.effects
+        //     //     });
+        //     // }
 
-            const videoTracks = avStream.getVideoTracks();
+        //     const videoTracks = avStream.getVideoTracks();
 
-            if (videoTracks.length) {
-                const videoStream = new MediaStream(videoTracks);
+        //     if (videoTracks.length) {
+        //         const videoStream = new MediaStream(videoTracks);
 
-                mediaStreamsMetaData2.push({
-                    stream: videoStream,
-                    track: videoStream.getVideoTracks()[0],
+        //         // mediaStreamsMetaData2.push({
+        //         //     stream: videoStream,
+        //         //     track: videoStream.getVideoTracks()[0],
+        //         //     videoType: VideoType.CAMERA,
+        //         //     effects: otherOptions.effects
+        //         // });
+        //         // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice888888888888: ", mediaStreamsMetaData2)
+        //         // console.log("123: ", stream_default)
+        //         try {
+        //             mediaStreamsMetaData.push({
+        //                 stream: stream_default.streams[0],
+        //                 track: stream_default.track,
+        //                 videoType: VideoType.CAMERA,
+        //                 effects: otherOptions.effects
+        //             })
+        //             // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice88888888888811111: ", mediaStreamsMetaData)
+        //         } catch (error) {
+        //             console.log("errrrrrrrrrrr: ", error)
+        //         }
+        //     }
+        // };
+
+        try {
+            if (stream_default && stream_default.track && stream_default.track.kind == "video") {
+                mediaStreamsMetaData.push({
+                    stream: stream_default.streams[0],
+                    track: stream_default.track,
                     videoType: VideoType.CAMERA,
                     effects: otherOptions.effects
-                });
-                // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice888888888888: ", mediaStreamsMetaData2)
-                // console.log("123: ", stream_default)
-                try {
-                    mediaStreamsMetaData.push({
-                        stream: stream_default.streams[0],
-                        track: stream_default.track,
-                        videoType: VideoType.CAMERA,
-                        effects: otherOptions.effects
-                    })
-                    // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice88888888888811111: ", mediaStreamsMetaData)
-                } catch (error) {
-                    console.log("errrrrrrrrrrr: ", error)
-                }
+                })
             }
-        };
+            console.log("mediaStreamsMetaData: ", mediaStreamsMetaData, mediaStreamsMetaData[0].track.id)
+        } catch (error) {
+            console.log("eeeeeeeeeeeeeeeeeeeee22222:", error)
+            
+        }
 
-        return maybeRequestDesktopDevice()
-            // .then(maybeCreateAndAddDesktopTrack)
-            .then(maybeRequestCaptureDevices)
-            .then(maybeCreateAndAddAVTracks)
-            .then(() => mediaStreamsMetaData)
-            .catch(error => {
-                mediaStreamsMetaData.forEach(({ stream }) => {
-                    this.stopMediaStream(stream);
-                });
+        return Promise.resolve(mediaStreamsMetaData)
+        
+        // return maybeRequestDesktopDevice()
+        //     // .then(maybeCreateAndAddDesktopTrack)
+        //     .then(maybeRequestCaptureDevices)
+        //     .then(maybeCreateAndAddAVTracks)
+        //     .then(() => mediaStreamsMetaData)
+        //     .catch(error => {
+        //         mediaStreamsMetaData.forEach(({ stream }) => {
+        //             this.stopMediaStream(stream);
+        //         });
 
-                return Promise.reject(error);
-            });
+        //         return Promise.reject(error);
+        //     });
     }
 
     /**

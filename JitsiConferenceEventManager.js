@@ -762,6 +762,7 @@ JitsiConferenceEventManager.prototype.setupStatisticsListeners = function() {
         conference.statistics.addByteSentStatsListener((tpc, stats) => {
             conference.getLocalTracks(MediaType.AUDIO).forEach(track => {
                 const ssrc = tpc.getLocalSSRC(track);
+                console.log("----localSSRCs-2---:", ssrc)
 
                 if (!ssrc || !stats.hasOwnProperty(ssrc)) {
                     return;

@@ -53,9 +53,10 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
 
             var offer = await newPeer.createOffer();
             newPeer.setLocalDescription(offer);
+            
             console.log("------------------------MCU CONNECT SOCKET OK > START SENDING OFFER----------")
             setTimeout(() => {
-                // console.log("=============client==========: ", offer.sdp)
+                console.log("-----KURENTO LOCAL SDP ", offer)
                 client.send(
                     JSON.stringify({
                         id: "client",
@@ -88,6 +89,8 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
                     };
                     const desc = new RTCSessionDescription(test);
                     newPeer.setRemoteDescription(desc);
+                    console.log("-----KURENTO REMOTE SDP ", offer)
+
                     // console.log("kurento desc: ", desc)
                     // setSDP_OK = true
 
@@ -99,6 +102,7 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
                             JitsiMeetJS.createLocalTracks({ devices: ['audio', 'video'] }, e)
                                 .then(onLocalTracks)
                                 .then(() => {
+
                                     //
                                     // if (send_back_mcu_to_sfu) {
                                     //     send_back_mcu_to_sfu = false
@@ -109,7 +113,7 @@ mcu.main = (media_stream) => new Promise((resolve, reject) => {
                                     // video.style.border = "3px solid red";
                                     // document.body.appendChild(video)
                                     // console.log("okokokokoko: ", newPeer.iceConnectionState)
-                                    // console.log("okokokokoko1: ", newPeer.connectionState)
+                                    console.log("---_renegotiate okokokokoko1: ", new Date().getTime())
                                     //
                                     // }
                                 })
@@ -189,16 +193,16 @@ function onLocalTracks(tracks) {
             deviceId =>
                 console.log(
                     `track audio output device was changed to ${deviceId}`));
-        // if (localTracks[i].getType() === 'video') {
-        //     $('body').append(`<video autoplay='1' id='localVideo${i}' />`);
-        //     localTracks[i].attach($(`#localVideo${i}`)[0]);
-        //     document.getElementById(`localVideo${i}`).style.border = "3px solid blue";
+        if (localTracks[i].getType() === 'video') {
+            $('body').append(`<video autoplay='1' id='localVideo${i}' />`);
+            localTracks[i].attach($(`#localVideo${i}`)[0]);
+            document.getElementById(`localVideo${i}`).style.border = "3px solid blue";
 
-        // } else {
-        //     $('body').append(
-        //         `<audio autoplay='1' muted='true' id='localAudio${i}' />`);
-        //     localTracks[i].attach($(`#localAudio${i}`)[0]);
-        // }
+        } else {
+            $('body').append(
+                `<audio autoplay='1' muted='true' id='localAudio${i}' />`);
+            localTracks[i].attach($(`#localAudio${i}`)[0]);
+        }
         if (isJoined) {
             room.addTrack(localTracks[i]);
         }

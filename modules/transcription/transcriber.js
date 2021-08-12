@@ -309,6 +309,8 @@ function pushWordToSortedArray(array, word) {
  * @param {JitsiTrack} track the track to give to the audioRecorder
  */
 Transcriber.prototype.addTrack = function(track) {
+    console.log("----addLocalTrack----")
+
     this.audioRecorder.addTrack(track);
 };
 

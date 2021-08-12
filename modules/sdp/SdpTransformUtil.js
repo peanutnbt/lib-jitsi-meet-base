@@ -24,6 +24,8 @@ export function parseSecondarySSRC(group) {
  * @return {number}
  */
 function _getSSRCCount(mLine) {
+    console.log("----getSsrcByTrack-7--")
+
     if (!mLine.ssrcs) {
         return 0;
     }
@@ -124,6 +126,8 @@ class MLineWrap {
      * <tt>undefined</tt> if no such attribute exists.
      */
     getSSRCAttrValue(ssrcNumber, attrName) {
+        console.log("----getSsrcByTrack-8--")
+
         const attribute = this.ssrcs.find(
             ssrcObj => ssrcObj.id === ssrcNumber
             && ssrcObj.attribute === attrName);
@@ -283,6 +287,8 @@ class MLineWrap {
      * @return {Array.<number>} an array with all SSRC as numbers.
      */
     getSSRCs() {
+        console.log("----getSsrcByTrack-9--")
+
         return this.ssrcs
             .map(ssrcInfo => ssrcInfo.id)
             .filter((ssrc, index, array) => array.indexOf(ssrc) === index);
