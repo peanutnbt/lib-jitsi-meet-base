@@ -607,6 +607,7 @@ TraceablePeerConnection.prototype.getAudioLevels = function(speakerList = []) {
  */
 TraceablePeerConnection.prototype.getLocalTracks = function(mediaType) {
     let tracks = Array.from(this.localTracks.values());
+    console.log('--------addTrack---1----')
 
     if (mediaType !== undefined) {
         tracks = tracks.filter(track => track.getType() === mediaType);
@@ -742,8 +743,12 @@ TraceablePeerConnection.prototype.getTrackBySSRC = function(ssrc) {
     if (typeof ssrc !== 'number') {
         throw new Error(`SSRC ${ssrc} is not a number`);
     }
+
+
     for (const localTrack of this.localTracks.values()) {
         if (this.getLocalSSRC(localTrack) === ssrc) {
+            console.log('--------addTrack---1----')
+
             return localTrack;
         }
     }
@@ -1667,6 +1672,8 @@ TraceablePeerConnection.prototype._mungeCodecOrder = function(description) {
  */
 TraceablePeerConnection.prototype.containsTrack = function(track) {
     if (track.isLocal()) {
+        console.log('--------addTrack---1----')
+
         return this.localTracks.has(track.rtcId);
     }
 
@@ -1684,6 +1691,8 @@ TraceablePeerConnection.prototype.containsTrack = function(track) {
  */
 TraceablePeerConnection.prototype.addTrack = function(track, isInitiator = false) {
     const rtcId = track.rtcId;
+    console.log('--------addTrack---1----')
+
 
     logger.info(`${this} adding ${track}`);
 
@@ -1825,6 +1834,9 @@ TraceablePeerConnection.prototype._removeStream = function(mediaStream) {
 TraceablePeerConnection.prototype._assertTrackBelongs = function(
         methodName,
         localTrack) {
+
+    console.log('--------addTrack---1----')
+
     const doesBelong = this.localTracks.has(localTrack.rtcId);
 
     if (!doesBelong) {
@@ -1926,6 +1938,8 @@ TraceablePeerConnection.prototype.removeTrack = function(localTrack) {
         // Abort - nothing to be done here
         return;
     }
+
+
     this.localTracks.delete(localTrack.rtcId);
     this.localSSRCs.delete(localTrack.rtcId);
 
@@ -1979,14 +1993,17 @@ TraceablePeerConnection.prototype.findSenderForTrack = function(track) {
  * renegotiation will be needed. Otherwise no renegotiation is needed.
  */
 TraceablePeerConnection.prototype.replaceTrack = function(oldTrack, newTrack) {
-    if (this._usesUnifiedPlan) {
-        logger.debug(`${this} TPC.replaceTrack using unified plan`);
 
-        return this.tpcUtils.replaceTrack(oldTrack, newTrack)
+    console.log('--------addTrack-------')
+    
+    // if (this._usesUnifiedPlan) {
+    //     logger.debug(`${this} TPC.replaceTrack using unified plan`);
 
-            // Renegotiate when SDP is used for simulcast munging or when in p2p mode.
-            .then(() => (this.isSimulcastOn() && browser.usesSdpMungingForSimulcast()) || this.isP2P);
-    }
+    //     return this.tpcUtils.replaceTrack(oldTrack, newTrack)
+
+    //         // Renegotiate when SDP is used for simulcast munging or when in p2p mode.
+    //         .then(() => (this.isSimulcastOn() && browser.usesSdpMungingForSimulcast()) || this.isP2P);
+    // }
 
     logger.debug(`${this} TPC.replaceTrack using plan B`);
 
@@ -2255,7 +2272,7 @@ TraceablePeerConnection.prototype.setLocalDescription = function(description) {
     return new Promise((resolve, reject) => {
         this.peerconnection.setLocalDescription(localSdp)
             .then(() => {
-                console.log("----setLocalDescriptionOnSuccess: ", localSdp.sdp.candidate)
+                console.log("----setLocalDescriptionOnSuccess: ", localSdp)
                 const localUfrag = SDPUtil.getUfrag(localSdp.sdp);
 
                 if (localUfrag !== this.localUfrag) {
@@ -2661,6 +2678,8 @@ TraceablePeerConnection.prototype.sendTones = function(tones, duration = 200, in
         }
 
         if (!this._dtmfSender) {
+            console.log('--------addTrack---1----')
+
             const localAudioTrack = Array.from(this.localTracks.values()).find(t => t.isAudioTrack());
 
             if (this.peerconnection.createDTMFSender && localAudioTrack) {
@@ -2931,6 +2950,8 @@ TraceablePeerConnection.prototype._extractPrimarySSRC = function(ssrcObj) {
  */
 TraceablePeerConnection.prototype._processLocalSSRCsMap = function(ssrcMap) {
     for (const track of this.localTracks.values()) {
+        console.log('--------addTrack---1----')
+
         const sourceIdentifier = this._usesUnifiedPlan ? track.getType() : track.storedMSID;
 
         if (ssrcMap.has(sourceIdentifier)) {

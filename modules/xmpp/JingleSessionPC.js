@@ -575,9 +575,9 @@ export default class JingleSessionPC extends JingleSession {
 
                     this._renegotiate()
                         .then(() => {
-                            const newSdp = new SDP(this.peerconnection.localDescription.sdp);
+                            // const newSdp = new SDP(this.peerconnection.localDescription.sdp);
 
-                            this.notifyMySSRCUpdate(oldSdp, newSdp);
+                            // this.notifyMySSRCUpdate(oldSdp, newSdp);
                             finishedCallback();
                         },
                         finishedCallback /* will be called with en error */);
@@ -618,6 +618,8 @@ export default class JingleSessionPC extends JingleSession {
      * @private
      */
     sendIceCandidate(candidate) {
+        console.log("sendIceCandidate olo:")
+
         const localSDP = new SDP(this.peerconnection.localDescription.sdp);
 
         if (candidate && candidate.candidate.length && !this.lasticecandidate) {
@@ -640,12 +642,16 @@ export default class JingleSessionPC extends JingleSession {
                         if (this.dripContainer.length === 0) {
                             return;
                         }
+                        console.log("sendIceCandidate olo1:")
+
                         this.sendIceCandidates(this.dripContainer);
                         this.dripContainer = [];
                     }, ICE_CAND_GATHERING_TIMEOUT);
                 }
                 this.dripContainer.push(candidate);
             } else {
+                console.log("sendIceCandidate olo2:")
+
                 this.sendIceCandidates([ candidate ]);
             }
         } else {
@@ -680,6 +686,7 @@ export default class JingleSessionPC extends JingleSession {
 
         for (let mid = 0; mid < localSDP.media.length; mid++) {
             const cands = candidates.filter(el => el.sdpMLineIndex === mid);
+            console.log("--cands:", cands)
             const mline
                 = SDPUtil.parseMLine(localSDP.media[mid].split('\r\n')[0]);
 
@@ -943,6 +950,7 @@ export default class JingleSessionPC extends JingleSession {
             const addTracks = [];
 
             for (const localTrack of localTracks) {
+                console.log('--------addTrack-------:', localTrack)
                 addTracks.push(this.peerconnection.addTrack(localTrack, this.isInitiator));
             }
 
@@ -1045,6 +1053,7 @@ export default class JingleSessionPC extends JingleSession {
             const addTracks = [];
 
             for (const track of localTracks) {
+                console.log('--------addTrack-------:', track)
                 addTracks.push(this.peerconnection.addTrack(track, this.isInitiator));
             }
 
@@ -1095,6 +1104,7 @@ export default class JingleSessionPC extends JingleSession {
                     if (oldLocalSdp) {
                         const newLocalSdp
                             = new SDP(this.peerconnection.localDescription.sdp);
+                        console.log("----elem -notifyMySSRCUpdate-: ")
 
                         this.notifyMySSRCUpdate(
                             new SDP(oldLocalSdp), newLocalSdp);
@@ -1584,6 +1594,8 @@ export default class JingleSessionPC extends JingleSession {
     onXmppStatusChanged(status) {
         if (status === XmppConnection.Status.CONNECTED && this._cachedOldLocalSdp) {
             logger.info(`${this} Sending SSRC update on reconnect`);
+            console.log("----elem -notifyMySSRCUpdate-: ")
+
             this.notifyMySSRCUpdate(
                 this._cachedOldLocalSdp,
                 this._cachedNewLocalSdp);
@@ -1707,6 +1719,7 @@ export default class JingleSessionPC extends JingleSession {
                 this._renegotiate(newRemoteSdp.raw)
                     .then(() => {
                         const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
+                        console.log("----elem -notifyMySSRCUpdate-: ")
 
                         this.notifyMySSRCUpdate(oldLocalSdp, newLocalSDP);
                         finishCallback();
@@ -1779,6 +1792,8 @@ export default class JingleSessionPC extends JingleSession {
                         = new SDP(this.peerconnection.localDescription.sdp);
 
                     logger.log(`${this} ${logPrefix} - OK`);
+                    console.log("----elem -notifyMySSRCUpdate-: ")
+
                     this.notifyMySSRCUpdate(oldLocalSdp, newLocalSdp);
                     finishedCallback();
                 }, error => {
@@ -1921,33 +1936,33 @@ export default class JingleSessionPC extends JingleSession {
      *  rejects with an error {string}
      */
     _renegotiate(optionalRemoteSdp) {
-        if (this.peerconnection.signalingState === 'closed') {
-            const error = new Error('Attempted to renegotiate in state closed');
+        // if (this.peerconnection.signalingState === 'closed') {
+        //     const error = new Error('Attempted to renegotiate in state closed');
 
-            this.room.eventEmitter.emit(XMPPEvents.RENEGOTIATION_FAILED, error, this);
+        //     this.room.eventEmitter.emit(XMPPEvents.RENEGOTIATION_FAILED, error, this);
 
-            return Promise.reject(error);
-        }
+        //     return Promise.reject(error);
+        // }
 
         const remoteSdp
             = optionalRemoteSdp || this.peerconnection.remoteDescription.sdp;
 
-        if (!remoteSdp) {
-            const error = new Error(`Can not renegotiate without remote description, current state: ${this.state}`);
+        // if (!remoteSdp) {
+        //     const error = new Error(`Can not renegotiate without remote description, current state: ${this.state}`);
 
-            this.room.eventEmitter.emit(XMPPEvents.RENEGOTIATION_FAILED, error, this);
+        //     this.room.eventEmitter.emit(XMPPEvents.RENEGOTIATION_FAILED, error, this);
 
-            return Promise.reject(error);
-        }
+        //     return Promise.reject(error);
+        // }
 
         const remoteDescription = new RTCSessionDescription({
             type: this.isInitiator ? 'answer' : 'offer',
             sdp: remoteSdp
         });
 
-        if (this.isInitiator) {
-            return this._initiatorRenegotiate(remoteDescription);
-        }
+        // if (this.isInitiator) {
+        //     return this._initiatorRenegotiate(remoteDescription);
+        // }
 
         return this._responderRenegotiate(remoteDescription);
     }
@@ -2062,6 +2077,7 @@ export default class JingleSessionPC extends JingleSession {
                         && this.state === JingleSessionState.ACTIVE) {
                         promise = this._renegotiate().then(() => {
                             const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
+                            console.log("----elem -notifyMySSRCUpdate-: ")
 
                             this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
                         });

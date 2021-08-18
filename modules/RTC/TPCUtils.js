@@ -238,10 +238,12 @@ export class TPCUtils {
             }
             this.pc.peerconnection.addTransceiver(track, transceiverInit);
         } else {
+            console.log("--------addTrack-------: ", localTrack.track)
+            console.log("--------addTrack-------: ", localTrack.stream)
             // Use pc.addTrack() for responder case so that we can re-use the m-lines that were created
             // when setRemoteDescription was called. pc.addTrack() automatically  attaches to any existing
             // unused "recv-only" transceiver.
-            this.pc.peerconnection.addTrack(track);
+            this.pc.peerconnection.addTrack(localTrack.track, localTrack.stream);
         }
     }
 
@@ -366,6 +368,7 @@ export class TPCUtils {
                     this.pc.localSSRCs.delete(oldTrack.rtcId);
                 });
         } else if (newTrack && !oldTrack) {
+            console.log('--------addTrack-------')
             return this.addTrackUnmute(newTrack)
                 .then(() => {
                     const mediaType = newTrack.getType();
@@ -376,18 +379,22 @@ export class TPCUtils {
                     if (transceiver) {
                         transceiver.direction = MediaDirection.SENDRECV;
                     }
+                    console.log('--------addTrack-------: ', mediaType)
+                    console.log('--------addTrack-------: ', transceiver)
+                    return Promise.resolve(this.pc.localTracks.set(newTrack.rtcId, newTrack))
+                    
+                    // // Avoid configuring the encodings on Chromium/Safari until simulcast is configured
+                    // // for the newly added track using SDP munging which happens during the renegotiation.
+                    // const promise = browser.usesSdpMungingForSimulcast()
+                    //     ? Promise.resolve()
+                    //     : this.setEncodings(newTrack);
 
-                    // Avoid configuring the encodings on Chromium/Safari until simulcast is configured
-                    // for the newly added track using SDP munging which happens during the renegotiation.
-                    const promise = browser.usesSdpMungingForSimulcast()
-                        ? Promise.resolve()
-                        : this.setEncodings(newTrack);
 
-                    return promise
-                        .then(() => {
-                            // Add the new track to the list of local tracks.
-                            this.pc.localTracks.set(newTrack.rtcId, newTrack);
-                        });
+                    // return promise
+                    //     .then(() => {
+                    //         // Add the new track to the list of local tracks.
+                    //         this.pc.localTracks.set(newTrack.rtcId, newTrack);
+                    //     });
                 });
         }
 

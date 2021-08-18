@@ -938,6 +938,7 @@ JitsiConference.prototype.setSubject = function(subject) {
  * @return {Transcriber} the transcriber object
  */
 JitsiConference.prototype.getTranscriber = function() {
+    console.log('--------addTrack-------:')
     if (this.transcriber === undefined) {
         this.transcriber = new Transcriber();
 
@@ -976,18 +977,18 @@ JitsiConference.prototype.getTranscriptionStatus = function() {
  * another video track in the conference.
  */
 JitsiConference.prototype.addTrack = function(track) {
-    const mediaType = track.getType();
-    const localTracks = this.rtc.getLocalTracks(mediaType);
+    // const mediaType = track.getType();
+    // const localTracks = this.rtc.getLocalTracks(mediaType);
 
-    // Ensure there's exactly 1 local track of each media type in the conference.
-    if (localTracks.length > 0) {
-        // Don't be excessively harsh and severe if the API client happens to attempt to add the same local track twice.
-        if (track === localTracks[0]) {
-            return Promise.resolve(track);
-        }
+    // // Ensure there's exactly 1 local track of each media type in the conference.
+    // if (localTracks.length > 0) {
+    //     // Don't be excessively harsh and severe if the API client happens to attempt to add the same local track twice.
+    //     if (track === localTracks[0]) {
+    //         return Promise.resolve(track);
+    //     }
 
-        return Promise.reject(new Error(`Cannot add second ${mediaType} track to the conference`));
-    }
+    //     return Promise.reject(new Error(`Cannot add second ${mediaType} track to the conference`));
+    // }
 
     return this.replaceTrack(null, track);
 };
@@ -1859,6 +1860,7 @@ JitsiConference.prototype.onRemoteTrackAdded = function(track) {
     participant._tracks.push(track);
 
     if (this.transcriber) {
+        console.log('--------addTrack-------:')
         this.transcriber.addTrack(track);
     }
 
