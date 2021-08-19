@@ -938,6 +938,7 @@ JitsiConference.prototype.setSubject = function(subject) {
  * @return {Transcriber} the transcriber object
  */
 JitsiConference.prototype.getTranscriber = function() {
+    console.log('--------addTrack-------:')
     if (this.transcriber === undefined) {
         this.transcriber = new Transcriber();
         console.log("---addLocalTrack---")
@@ -979,7 +980,7 @@ JitsiConference.prototype.addTrack = function(track) {
     // const mediaType = track.getType();
     // const localTracks = this.rtc.getLocalTracks(mediaType);
 
-    // Ensure there's exactly 1 local track of each media type in the conference.
+    // // Ensure there's exactly 1 local track of each media type in the conference.
     // if (localTracks.length > 0) {
     //     // Don't be excessively harsh and severe if the API client happens to attempt to add the same local track twice.
     //     if (track === localTracks[0]) {
@@ -1863,8 +1864,7 @@ JitsiConference.prototype.onRemoteTrackAdded = function(track) {
     participant._tracks.push(track);
 
     if (this.transcriber) {
-        console.log("---addLocalTrack-1--")
-
+        console.log('--------addTrack-------:')
         this.transcriber.addTrack(track);
     }
 
