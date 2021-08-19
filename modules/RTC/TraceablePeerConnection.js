@@ -1694,75 +1694,80 @@ TraceablePeerConnection.prototype.addTrack = function(track, isInitiator = false
     console.log('--------addTrack---1----')
 
 
-    logger.info(`${this} adding ${track}`);
+    // logger.info(`${this} adding ${track}`);
 
-    if (this.localTracks.has(rtcId)) {
+    // if (this.localTracks.has(rtcId)) {
 
-        return Promise.reject(new Error(`${track} is already in ${this}`));
-    }
+    //     return Promise.reject(new Error(`${track} is already in ${this}`));
+    // }
 
     this.localTracks.set(rtcId, track);
 
-    if (this._usesUnifiedPlan) {
-        try {
-            this.tpcUtils.addTrack(track, isInitiator);
-        } catch (error) {
-            logger.error(`${this} Adding track=${track} failed: ${error?.message}`);
+    this.peerconnection.addTrack(track.track, track.stream);
 
-            return Promise.reject(error);
-        }
-    } else {
-        // In all other cases, i.e., plan-b and unified plan bridge case, use addStream API to
-        // add the track to the peerconnection.
-        // TODO - addTransceiver doesn't generate a MSID for the stream, which is needed for signaling
-        // the ssrc to Jicofo. Switch to using UUID as MSID when addTransceiver is used in Unified plan
-        // JVB connection case as well.
-        const webrtcStream = track.getOriginalStream();
 
-        if (webrtcStream) {
-            this._addStream(webrtcStream);
+    // if (this._usesUnifiedPlan) {
+    //     try {
+    //         this.tpcUtils.addTrack(track, isInitiator);
+    //     } catch (error) {
+    //         logger.error(`${this} Adding track=${track} failed: ${error?.message}`);
 
-        // It's not ok for a track to not have a WebRTC stream if:
-        } else if (!browser.doesVideoMuteByStreamRemove()
-                    || track.isAudioTrack()
-                    || (track.isVideoTrack() && !track.isMuted())) {
-            return Promise.reject(new Error(`${this} no WebRTC stream for track=${track}`));
-        }
+    //         return Promise.reject(error);
+    //     }
+    // } 
+    
+    // else {
+    //     // In all other cases, i.e., plan-b and unified plan bridge case, use addStream API to
+    //     // add the track to the peerconnection.
+    //     // TODO - addTransceiver doesn't generate a MSID for the stream, which is needed for signaling
+    //     // the ssrc to Jicofo. Switch to using UUID as MSID when addTransceiver is used in Unified plan
+    //     // JVB connection case as well.
+    //     const webrtcStream = track.getOriginalStream();
 
-        // Muted video tracks do not have WebRTC stream
-        if (browser.doesVideoMuteByStreamRemove() && track.isVideoTrack() && track.isMuted()) {
-            const ssrcInfo = this.generateNewStreamSSRCInfo(track);
+    //     if (webrtcStream) {
+    //         this._addStream(webrtcStream);
 
-            this.sdpConsistency.setPrimarySsrc(ssrcInfo.ssrcs[0]);
-            const simGroup
-                = ssrcInfo.groups.find(groupInfo => groupInfo.semantics === 'SIM');
+    //     // It's not ok for a track to not have a WebRTC stream if:
+    //     } else if (!browser.doesVideoMuteByStreamRemove()
+    //                 || track.isAudioTrack()
+    //                 || (track.isVideoTrack() && !track.isMuted())) {
+    //         return Promise.reject(new Error(`${this} no WebRTC stream for track=${track}`));
+    //     }
 
-            if (simGroup) {
-                this.simulcast.setSsrcCache(simGroup.ssrcs);
-            }
-            const fidGroups
-                = ssrcInfo.groups.filter(
-                    groupInfo => groupInfo.semantics === 'FID');
+    //     // Muted video tracks do not have WebRTC stream
+    //     if (browser.doesVideoMuteByStreamRemove() && track.isVideoTrack() && track.isMuted()) {
+    //         const ssrcInfo = this.generateNewStreamSSRCInfo(track);
 
-            if (fidGroups) {
-                const rtxSsrcMapping = new Map();
+    //         this.sdpConsistency.setPrimarySsrc(ssrcInfo.ssrcs[0]);
+    //         const simGroup
+    //             = ssrcInfo.groups.find(groupInfo => groupInfo.semantics === 'SIM');
 
-                fidGroups.forEach(fidGroup => {
-                    const primarySsrc = fidGroup.ssrcs[0];
-                    const rtxSsrc = fidGroup.ssrcs[1];
+    //         if (simGroup) {
+    //             this.simulcast.setSsrcCache(simGroup.ssrcs);
+    //         }
+    //         const fidGroups
+    //             = ssrcInfo.groups.filter(
+    //                 groupInfo => groupInfo.semantics === 'FID');
 
-                    rtxSsrcMapping.set(primarySsrc, rtxSsrc);
-                });
-                this.rtxModifier.setSsrcCache(rtxSsrcMapping);
-            }
-        }
-    }
+    //         if (fidGroups) {
+    //             const rtxSsrcMapping = new Map();
+
+    //             fidGroups.forEach(fidGroup => {
+    //                 const primarySsrc = fidGroup.ssrcs[0];
+    //                 const rtxSsrc = fidGroup.ssrcs[1];
+
+    //                 rtxSsrcMapping.set(primarySsrc, rtxSsrc);
+    //             });
+    //             this.rtxModifier.setSsrcCache(rtxSsrcMapping);
+    //         }
+    //     }
+    // }
     let promiseChain = Promise.resolve();
 
     // On Firefox, the encodings have to be configured on the sender only after the transceiver is created.
-    if (browser.isFirefox()) {
-        promiseChain = promiseChain.then(() => this.tpcUtils.setEncodings(track));
-    }
+    // if (browser.isFirefox()) {
+    //     promiseChain = promiseChain.then(() => this.tpcUtils.setEncodings(track));
+    // }
 
     return promiseChain;
 };
@@ -2009,12 +2014,15 @@ TraceablePeerConnection.prototype.replaceTrack = function(oldTrack, newTrack) {
 
     let promiseChain = Promise.resolve();
 
-    if (oldTrack) {
-        this.removeTrack(oldTrack);
-    }
-    if (newTrack) {
-        promiseChain = this.addTrack(newTrack);
-    }
+    this.localTracks.set(newTrack.rtcId, newTrack);
+
+    this.peerconnection.addTrack(newTrack.track, newTrack.stream);
+    // if (oldTrack) {
+    //     this.removeTrack(oldTrack);
+    // }
+    // if (newTrack) {
+    //     promiseChain = this.addTrack(newTrack);
+    // }
 
     return promiseChain.then(() => true);
 };

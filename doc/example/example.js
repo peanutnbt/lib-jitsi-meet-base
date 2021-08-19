@@ -801,6 +801,7 @@ mcu.main = media_stream =>
                     // video.autoplay = true
                     // video.style.border = '3px solid red'
                     // document.body.appendChild(video)
+                    count = 2
                   })
                   .catch(error => {
                     console.log('errrrrrRER: ', error)
@@ -1092,8 +1093,8 @@ function changeAudioOutput (selected) {
   JitsiMeetJS.mediaDevices.setAudioOutputDevice(selected.value)
 }
 
-$(window).bind('beforeunload', unload)
-$(window).bind('unload', unload)
+// $(window).bind('beforeunload', unload)
+// $(window).bind('unload', unload)
 
 // JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.ERROR);
 const initOptions = {

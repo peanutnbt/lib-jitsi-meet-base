@@ -2030,74 +2030,91 @@ export default class JingleSessionPC extends JingleSession {
 
             const oldLocalSdp = this.peerconnection.localDescription.sdp;
 
-            if (!this.usesUnifiedPlan) {
-                // NOTE the code below assumes that no more than 1 video track
-                // can be added to the peer connection.
-                // Transition from camera to desktop share
-                // or transition from one camera source to another.
-                if (this.peerconnection.options.capScreenshareBitrate
-                    && oldTrack && newTrack && newTrack.isVideoTrack()) {
-                    // Clearing current primary SSRC will make
-                    // the SdpConsistency generate a new one which will result
-                    // with:
-                    // 1. source-remove for the old video stream.
-                    // 2. source-add for the new video stream.
-                    this.peerconnection.clearRecvonlySsrc();
-                }
+            // if (!this.usesUnifiedPlan) {
+            //     // NOTE the code below assumes that no more than 1 video track
+            //     // can be added to the peer connection.
+            //     // Transition from camera to desktop share
+            //     // or transition from one camera source to another.
+            //     if (this.peerconnection.options.capScreenshareBitrate
+            //         && oldTrack && newTrack && newTrack.isVideoTrack()) {
+            //         // Clearing current primary SSRC will make
+            //         // the SdpConsistency generate a new one which will result
+            //         // with:
+            //         // 1. source-remove for the old video stream.
+            //         // 2. source-add for the new video stream.
+            //         this.peerconnection.clearRecvonlySsrc();
+            //     }
 
-                // Transition from no video to video (unmute).
-                if (!oldTrack && newTrack && newTrack.isVideoTrack()) {
-                    // Clearing current primary SSRC will make
-                    // the SdpConsistency generate a new one which will result
-                    // with:
-                    // 1. source-remove for the recvonly
-                    // 2. source-add for the new video stream
-                    this.peerconnection.clearRecvonlySsrc();
+            //     // Transition from no video to video (unmute).
+            //     if (!oldTrack && newTrack && newTrack.isVideoTrack()) {
+            //         // Clearing current primary SSRC will make
+            //         // the SdpConsistency generate a new one which will result
+            //         // with:
+            //         // 1. source-remove for the recvonly
+            //         // 2. source-add for the new video stream
+            //         this.peerconnection.clearRecvonlySsrc();
 
-                // Transition from video to no video
-                } else if (oldTrack && oldTrack.isVideoTrack() && !newTrack) {
-                    // Clearing current primary SSRC and generating the recvonly
-                    // will result in:
-                    // 1. source-remove for the old video stream
-                    // 2. source-add for the recvonly stream
-                    this.peerconnection.clearRecvonlySsrc();
-                    this.peerconnection.generateRecvonlySsrc();
-                }
-            }
+            //     // Transition from video to no video
+            //     } else if (oldTrack && oldTrack.isVideoTrack() && !newTrack) {
+            //         // Clearing current primary SSRC and generating the recvonly
+            //         // will result in:
+            //         // 1. source-remove for the old video stream
+            //         // 2. source-add for the recvonly stream
+            //         this.peerconnection.clearRecvonlySsrc();
+            //         this.peerconnection.generateRecvonlySsrc();
+            //     }
+            // }
 
-            this.peerconnection.replaceTrack(oldTrack, newTrack)
-                .then(shouldRenegotiate => {
-                    let promise = Promise.resolve();
+            // this.peerconnection.replaceTrack(oldTrack, newTrack)
+            //     .then(shouldRenegotiate => {
+                    // this.peerconnection.localTracks.set(newTrack.rtcId, newTrack);
 
-                    logger.debug(`${this} TPC.replaceTrack finished. shouldRenegotiate = ${
-                        shouldRenegotiate}, JingleSessionState = ${this.state}`);
+                    this.peerconnection.peerconnection.addTrack(newTrack.track, newTrack.stream);
+                    this._renegotiate().then(() => {
+                        const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
+                        this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
+                        finishedCallback()
 
-                    if (shouldRenegotiate
-                        && (oldTrack || newTrack)
-                        && this.state === JingleSessionState.ACTIVE) {
-                        promise = this._renegotiate().then(() => {
-                            const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
-                            console.log("----elem -notifyMySSRCUpdate-: ")
-
-                            this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
-                        });
-                    }
-
-                    return promise.then(() => {
-                        if (newTrack && newTrack.isVideoTrack()) {
-                            logger.debug(`${this} replaceTrack worker: configuring video stream`);
-
-                            // FIXME set all sender parameters in one go?
-                            // Set the degradation preference on the new video sender.
-                            // return this.peerconnection.setSenderVideoDegradationPreference()
-                            //     .then(() => this.peerconnection.setSenderVideoConstraint())
-                            //     .then(() => this.peerconnection.setMaxBitRate());
-                            return this.peerconnection.setSenderVideoConstraint()
-                                .then(() => this.peerconnection.setMaxBitRate());
-                        }
                     });
-                })
-                .then(() => finishedCallback(), error => finishedCallback(error));
+                    // let promise = Promise.resolve();
+
+                    // logger.debug(`${this} TPC.replaceTrack finished. shouldRenegotiate = ${
+                    //     shouldRenegotiate}, JingleSessionState = ${this.state}`);
+
+                    // if (shouldRenegotiate
+                    //     && (oldTrack || newTrack)
+                    //     && this.state === JingleSessionState.ACTIVE) {
+                        // this._renegotiate().then(() => {
+                        //     const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
+                        //     // console.log("----elem -notifyMySSRCUpdate-: ")
+
+                        //     this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
+                        //     // if (newTrack && newTrack.isVideoTrack()) {
+                        //     //     this.peerconnection.setSenderVideoConstraint()
+                        //     //         .then(() => this.peerconnection.setMaxBitRate())
+                        //     //         .then(() => finishedCallback(), error => finishedCallback(error));
+                        //     // }
+                        //     finishedCallback()
+
+                        // });
+                    // }
+
+                    // // return promise.then(() => {
+                    //     if (newTrack && newTrack.isVideoTrack()) {
+                    //         logger.debug(`${this} replaceTrack worker: configuring video stream`);
+
+                    //         // FIXME set all sender parameters in one go?
+                    //         // Set the degradation preference on the new video sender.
+                    //         // return this.peerconnection.setSenderVideoDegradationPreference()
+                    //         //     .then(() => this.peerconnection.setSenderVideoConstraint())
+                    //         //     .then(() => this.peerconnection.setMaxBitRate());
+                    //         return this.peerconnection.setSenderVideoConstraint()
+                    //             .then(() => this.peerconnection.setMaxBitRate());
+                    //     }
+                    //     finishedCallback()
+                    // });
+                // })
+                // .then(() => finishedCallback(), error => finishedCallback(error));
         };
 
         return new Promise((resolve, reject) => {
