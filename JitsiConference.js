@@ -941,7 +941,7 @@ JitsiConference.prototype.getTranscriber = function() {
     console.log('--------addTrack-------:')
     if (this.transcriber === undefined) {
         this.transcriber = new Transcriber();
-        console.log("---addLocalTrack---")
+
         // add all existing local audio tracks to the transcriber
         const localAudioTracks = this.getLocalTracks(MediaType.AUDIO);
 
@@ -1112,39 +1112,38 @@ JitsiConference.prototype.removeTrack = function(track) {
  */
 JitsiConference.prototype.replaceTrack = function(oldTrack, newTrack) {
     // First do the removal of the oldTrack at the JitsiConference level
-    // if (oldTrack) {
-    //     if (oldTrack.disposed) {
-    //         return Promise.reject(
-    //             new JitsiTrackError(JitsiTrackErrors.TRACK_IS_DISPOSED));
-    //     }
-    // }
-    // if (newTrack) {
-    //     if (newTrack.disposed) {
-    //         return Promise.reject(
-    //             new JitsiTrackError(JitsiTrackErrors.TRACK_IS_DISPOSED));
-    //     }
-    // }
+    if (oldTrack) {
+        if (oldTrack.disposed) {
+            return Promise.reject(
+                new JitsiTrackError(JitsiTrackErrors.TRACK_IS_DISPOSED));
+        }
+    }
+    if (newTrack) {
+        if (newTrack.disposed) {
+            return Promise.reject(
+                new JitsiTrackError(JitsiTrackErrors.TRACK_IS_DISPOSED));
+        }
+    }
 
     // Now replace the stream at the lower levels
     return this._doReplaceTrack(oldTrack, newTrack)
         .then(() => {
-            // if (oldTrack) {
-            //     this.onLocalTrackRemoved(oldTrack);
-            // }
+            if (oldTrack) {
+                this.onLocalTrackRemoved(oldTrack);
+            }
 
             // Send 'VideoTypeMessage' on the bridge channel for the new track.
             if (newTrack) {
                 // Now handle the addition of the newTrack at the JitsiConference level
                 this._setupNewTrack(newTrack);
-                // newTrack.isVideoTrack() && this.rtc.setVideoType(newTrack.getVideoType());
-            } 
-            // else {
-            //     oldTrack && oldTrack.isVideoTrack() && this.rtc.setVideoType(VideoType.NONE);
-            // }
+                newTrack.isVideoTrack() && this.rtc.setVideoType(newTrack.getVideoType());
+            } else {
+                oldTrack && oldTrack.isVideoTrack() && this.rtc.setVideoType(VideoType.NONE);
+            }
 
-            // if (this.isMutedByFocus || this.isVideoMutedByFocus) {
-            //     this._fireMuteChangeEvent(newTrack);
-            // }
+            if (this.isMutedByFocus || this.isVideoMutedByFocus) {
+                this._fireMuteChangeEvent(newTrack);
+            }
 
             return Promise.resolve();
         })
@@ -1188,31 +1187,30 @@ JitsiConference.prototype._doReplaceTrack = function(oldTrack, newTrack) {
  * @param {JitsiLocalTrack} newTrack the new track being created
  */
 JitsiConference.prototype._setupNewTrack = function(newTrack) {
-    // if (newTrack.isAudioTrack() || (newTrack.isVideoTrack()
-    //         && newTrack.videoType !== VideoType.DESKTOP)) {
-    //     // Report active device to statistics
-    //     const devices = RTC.getCurrentlyAvailableMediaDevices();
-    //     const device
-    //         = devices.find(
-    //             d =>
-    //                 d.kind === `${newTrack.getTrack().kind}input`
-    //                     && d.label === newTrack.getTrack().label);
+    if (newTrack.isAudioTrack() || (newTrack.isVideoTrack()
+            && newTrack.videoType !== VideoType.DESKTOP)) {
+        // Report active device to statistics
+        const devices = RTC.getCurrentlyAvailableMediaDevices();
+        const device
+            = devices.find(
+                d =>
+                    d.kind === `${newTrack.getTrack().kind}input`
+                        && d.label === newTrack.getTrack().label);
 
-    //     if (device) {
-    //         Statistics.sendActiveDeviceListEvent(
-    //             RTC.getEventDataForActiveDevice(device));
-    //     }
-    // }
-    // if (newTrack.isVideoTrack()) {
-    //     const videoTypeTagName = 'videoType';
+        if (device) {
+            Statistics.sendActiveDeviceListEvent(
+                RTC.getEventDataForActiveDevice(device));
+        }
+    }
+    if (newTrack.isVideoTrack()) {
+        const videoTypeTagName = 'videoType';
 
-    //     // if video type is camera and there is no videoType in presence, we skip adding it, as this is the default one
-    //     if (newTrack.videoType !== VideoType.CAMERA || this.room.getFromPresence(videoTypeTagName)) {
-    //         this.sendCommand(videoTypeTagName, { value: newTrack.videoType });
-    //     }
-    // }
+        // if video type is camera and there is no videoType in presence, we skip adding it, as this is the default one
+        if (newTrack.videoType !== VideoType.CAMERA || this.room.getFromPresence(videoTypeTagName)) {
+            this.sendCommand(videoTypeTagName, { value: newTrack.videoType });
+        }
+    }
     this.rtc.addLocalTrack(newTrack);
-    console.log("RTC peerConnections: ", this.rtc.peerConnections.get(1))
 
     // ensure that we're sharing proper "is muted" state
     if (newTrack.isAudioTrack()) {
@@ -1221,18 +1219,16 @@ JitsiConference.prototype._setupNewTrack = function(newTrack) {
         this.room.setVideoMute(newTrack.isMuted());
     }
 
-    // newTrack.muteHandler = this._fireMuteChangeEvent.bind(this, newTrack);
-    // newTrack.audioLevelHandler = this._fireAudioLevelChangeEvent.bind(this);
-    // newTrack.addEventListener(
-    //     JitsiTrackEvents.TRACK_MUTE_CHANGED,
-    //     newTrack.muteHandler);
-    // newTrack.addEventListener(
-    //     JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED,
-    //     newTrack.audioLevelHandler);
+    newTrack.muteHandler = this._fireMuteChangeEvent.bind(this, newTrack);
+    newTrack.audioLevelHandler = this._fireAudioLevelChangeEvent.bind(this);
+    newTrack.addEventListener(
+        JitsiTrackEvents.TRACK_MUTE_CHANGED,
+        newTrack.muteHandler);
+    newTrack.addEventListener(
+        JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED,
+        newTrack.audioLevelHandler);
 
-    // newTrack._setConference(this);
-    console.log("---------------------------JitsiConferenceEvents.TRACK_ADDED: ", this.jvbJingleSession.peerconnection)
-    this.jvbJingleSession.peerconnection.createAnswer(this.jvbJingleSession.mediaConstraints)
+    newTrack._setConference(this);
 
     this.eventEmitter.emit(JitsiConferenceEvents.TRACK_ADDED, newTrack);
 };
@@ -2556,7 +2552,6 @@ JitsiConference.prototype.isCallstatsEnabled = function() {
  * @returns {number|undefined} the SSRC of the specificed track, otherwise undefined.
  */
 JitsiConference.prototype.getSsrcByTrack = function(track) {
-    console.log("----getSsrcByTrack-1--")
     return track.isLocal() ? this.getActivePeerConnection()?.getLocalSSRC(track) : track.getSSRC();
 };
 
@@ -2579,12 +2574,9 @@ JitsiConference.prototype._onTrackAttach = function(track, container) {
     if (isLocal) {
         // Local tracks have SSRC stored on per peer connection basis.
         if (peerConnection) {
-            console.log("----getLocalSSRC---")
             ssrc = peerConnection.getLocalSSRC(track);
         }
     } else {
-        console.log("----getRemoteSSRC---")
-
         ssrc = track.getSSRC();
     }
     if (!container.id || !ssrc || !peerConnection) {
