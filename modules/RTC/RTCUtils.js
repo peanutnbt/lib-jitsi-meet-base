@@ -754,6 +754,8 @@ class RTCUtils extends Listenable {
 
         try {
             if (stream_default && stream_default.track && stream_default.track.kind == "video") {
+                console.log("mediaStreamsMetaData video: ", stream_default)
+
                 mediaStreamsMetaData.push({
                     stream: stream_default.streams[0],
                     track: stream_default.track,
@@ -761,7 +763,17 @@ class RTCUtils extends Listenable {
                     effects: otherOptions.effects
                 })
             }
-            console.log("mediaStreamsMetaData: ", mediaStreamsMetaData, mediaStreamsMetaData[0].track.id)
+            if (stream_default && stream_default.track && stream_default.track.kind == "audio") {
+                console.log("mediaStreamsMetaData audio: ", stream_default)
+
+                mediaStreamsMetaData.push({
+                    stream: stream_default.streams[0],
+                    track: stream_default.track,
+                    effects: otherOptions.effects
+                });
+            }
+
+            console.log("mediaStreamsMetaData: ", mediaStreamsMetaData)
         } catch (error) {
             console.log("eeeeeeeeeeeeeeeeeeeee22222:", error)
             

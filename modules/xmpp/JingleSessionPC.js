@@ -2059,7 +2059,6 @@ export default class JingleSessionPC extends JingleSession {
                 const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
                 this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
                 finishedCallback()
-
             });
 
             // if (!this.usesUnifiedPlan) {

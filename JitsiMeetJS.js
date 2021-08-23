@@ -326,7 +326,7 @@ export default _mergeNamespaceAndModule({
             .then(tracks => {
                 // console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice888888888888111112233: ", tracks)
                 console.log("stream_default: ", stream_default, stream_default.track.id)
-                console.log("tracks: ", tracks[0], tracks[0].track.id)
+                // console.log("tracks: ", tracks[0], tracks[0].track.id)
                 // promiseFulfilled = true;
 
                 // window.connectionTimes['obtainPermissions.end']

@@ -684,7 +684,7 @@
 let mcu = {}
 let send_back_mcu_to_sfu = true
 
-mcu.main = media_stream =>
+mcu.main = media_tracks =>
   new Promise((resolve, reject) => {
     // console.log("---media_stream", media_stream.getTracks())
 
@@ -727,13 +727,16 @@ mcu.main = media_stream =>
       }
 
       client.onopen = async () => {
-        // console.log("okkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-        var localStream = media_stream
-        localStream.getTracks().forEach(track => {
-          // console.log("track---------:", track)
-          // console.log("localStream---------:", localStream)
-          newPeer.addTrack(track, localStream)
-        })
+        console.log("okkkkkkkkkkkkkkkkkkkkkkkkkkkkkk: ", media_tracks)
+        // var localStream = media_streams[0]
+        // localStream.getTracks().forEach(track => {
+        //   // console.log("track---------:", track)
+        //   // console.log("localStream---------:", localStream)
+        //   newPeer.addTrack(track, localStream)
+        // })
+
+        newPeer.addTrack(media_tracks[0].track, media_tracks[0].stream)
+        newPeer.addTrack(media_tracks[1].track, media_tracks[1].stream)
 
         var offer = await newPeer.createOffer()
         newPeer.setLocalDescription(offer)
@@ -741,7 +744,8 @@ mcu.main = media_stream =>
           '------------------------MCU CONNECT SOCKET OK > START SENDING OFFER----------'
         )
         setTimeout(() => {
-          // console.log("=============client==========: ", offer.sdp)
+          console.log("---KURENTO setLocalDescription-------: ", offer.sdp)
+
           client.send(
             JSON.stringify({
               id: 'client',
@@ -776,9 +780,11 @@ mcu.main = media_stream =>
             newPeer.setRemoteDescription(desc)
             // console.log("kurento desc: ", desc)
             // setSDP_OK = true
+            console.log("---KURENTO setRemoteDescription-------: ", val.sdpAnswer)
 
             newPeer.ontrack = async e => {
-              if (count == 1) {
+              console.log("---KURENTO ONTRACK-------: ", e)
+              // if (count == 1) {
                 console.log(
                   '------------------ON TRACK IN BRIDGE MCU > START CALLING SFU--------------'
                 )
@@ -807,7 +813,7 @@ mcu.main = media_stream =>
                     console.log('errrrrrRER: ', error)
                     throw error
                   })
-              }
+              // }
             }
           }
           console.log('val.id: ', val.id)
@@ -903,15 +909,38 @@ function onLocalTracks (tracks) {
  * Handles remote tracks
  * @param track JitsiTrack object
  */
+
+let listTrackByEndpoint = new Map();
+
 function onRemoteTrack (track) {
   if (track.isLocal()) {
     return
   }
   try {
     // if(call_mcu){
-    if (track.getType() == 'video') {
-      mcu.main(track.stream)
-    }
+
+    // if (track.getType() == 'video') {
+
+      console.log("KURENTO JITSI listTrackByEndpoint.get(track.ownerEndpointId)  000: ", track, listTrackByEndpoint.get(track.ownerEndpointId))
+      let newArrayTrack
+      if(Array.isArray(listTrackByEndpoint.get(track.ownerEndpointId))){
+        listTrackByEndpoint.get(track.ownerEndpointId).push(track)
+        newArrayTrack = listTrackByEndpoint.get(track.ownerEndpointId)
+      }
+      else newArrayTrack = [track]
+       
+      listTrackByEndpoint.set(track.ownerEndpointId, newArrayTrack)
+
+      console.log("KURENTO JITSI listTrackByEndpoint: ", listTrackByEndpoint, [track])
+      console.log("KURENTO JITSI listTrackByEndpoint.get(track.ownerEndpointId): ", listTrackByEndpoint.get(track.ownerEndpointId))
+
+      if(listTrackByEndpoint.get(track.ownerEndpointId)?.length == 2 ){
+        mcu.main(listTrackByEndpoint.get(track.ownerEndpointId))
+        listTrackByEndpoint.delete(track.ownerEndpointId)
+      }
+
+      // mcu.main(track.stream)
+    // }
     //     call_mcu = false
     // }
   } catch (error) {
