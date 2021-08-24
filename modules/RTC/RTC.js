@@ -58,15 +58,21 @@ function _createLocalTracks(mediaStreamMetaData = []) {
             videoType,
             effects
         } = metaData;
-        console.log("maybeRequestDesktopDevicemaybeRequestDesktopDevice8888888888881111122: ", mediaStreamMetaData)
-
         // const { deviceId, facingMode } = track.getSettings();
 
         // FIXME Move rtcTrackIdCounter to a static method in JitsiLocalTrack
         // so RTC does not need to handle ID management. This move would be
         // safer to do once the old createLocalTracks is removed.
         rtcTrackIdCounter = safeCounterIncrement(rtcTrackIdCounter);
-
+        console.log("_createLocalTracks: ", {
+            sourceId,
+            sourceType,
+            stream,
+            track,
+            videoType,
+            effects, 
+            rtcTrackIdCounter
+        })
         return new JitsiLocalTrack({
             undefined,
             undefined,

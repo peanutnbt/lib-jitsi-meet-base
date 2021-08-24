@@ -1716,7 +1716,7 @@ TraceablePeerConnection.prototype.addTrack = function (track, isInitiator = fals
     //     return Promise.reject(new Error(`${track} is already in ${this}`));
     // }
 
-    this.localTracks.set(rtcId, track);
+    // this.localTracks.set(rtcId, track);
 
     this.peerconnection.addTrack(track.track, track.stream);
 
