@@ -238,12 +238,12 @@ export class TPCUtils {
             }
             this.pc.peerconnection.addTransceiver(track, transceiverInit);
         } else {
-            console.log("--------addTrack-------: ", localTrack.track)
-            console.log("--------addTrack-------: ", localTrack.stream)
-            // Use pc.addTrack() for responder case so that we can re-use the m-lines that were created
-            // when setRemoteDescription was called. pc.addTrack() automatically  attaches to any existing
-            // unused "recv-only" transceiver.
-            this.pc.peerconnection.addTrack(localTrack.track, localTrack.stream);
+            // console.log("--------addTrack-------: ", localTrack.track)
+            // console.log("--------addTrack-------: ", localTrack.stream)
+            // // Use pc.addTrack() for responder case so that we can re-use the m-lines that were created
+            // // when setRemoteDescription was called. pc.addTrack() automatically  attaches to any existing
+            // // unused "recv-only" transceiver.
+            // this.pc.peerconnection.addTrack(localTrack.track, localTrack.stream);
         }
     }
 

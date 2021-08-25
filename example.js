@@ -840,16 +840,17 @@ mcu.main = media_tracks =>
   })
 const options = {
   hosts: {
-    domain: 'meeting.atviettelsolutions.com',
-    muc: 'conference.meeting.atviettelsolutions.com' // FIXME: use XEP-0030
+    domain: 'jitsimeet.example.com',
+    muc: 'conference.jitsimeet.example.com' // FIXME: use XEP-0030
   },
-  bosh: 'https://meeting.atviettelsolutions.com/http-bind', // FIXME: use xep-0156 for that
+  bosh: 'https://jitsimeet.example.com/http-bind', // FIXME: use xep-0156 for that
 
   // The name of client node advertised in XEP-0115 'c' stanza
   clientNode: 'http://jitsi.org/jitsimeet'
 }
 
-const confOptions = {}
+const confOptions = {
+}
 
 let connection = null
 let isJoined = false

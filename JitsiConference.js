@@ -1189,29 +1189,29 @@ JitsiConference.prototype._doReplaceTrack = function(oldTrack, newTrack) {
  * @param {JitsiLocalTrack} newTrack the new track being created
  */
 JitsiConference.prototype._setupNewTrack = function(newTrack) {
-    if (newTrack.isAudioTrack() || (newTrack.isVideoTrack()
-            && newTrack.videoType !== VideoType.DESKTOP)) {
-        // Report active device to statistics
-        const devices = RTC.getCurrentlyAvailableMediaDevices();
-        const device
-            = devices.find(
-                d =>
-                    d.kind === `${newTrack.getTrack().kind}input`
-                        && d.label === newTrack.getTrack().label);
+    // if (newTrack.isAudioTrack() || (newTrack.isVideoTrack()
+    //         && newTrack.videoType !== VideoType.DESKTOP)) {
+    //     // Report active device to statistics
+    //     const devices = RTC.getCurrentlyAvailableMediaDevices();
+    //     const device
+    //         = devices.find(
+    //             d =>
+    //                 d.kind === `${newTrack.getTrack().kind}input`
+    //                     && d.label === newTrack.getTrack().label);
 
-        if (device) {
-            Statistics.sendActiveDeviceListEvent(
-                RTC.getEventDataForActiveDevice(device));
-        }
-    }
-    if (newTrack.isVideoTrack()) {
-        const videoTypeTagName = 'videoType';
+    //     if (device) {
+    //         Statistics.sendActiveDeviceListEvent(
+    //             RTC.getEventDataForActiveDevice(device));
+    //     }
+    // }
+    // if (newTrack.isVideoTrack()) {
+    //     const videoTypeTagName = 'videoType';
 
-        // if video type is camera and there is no videoType in presence, we skip adding it, as this is the default one
-        if (newTrack.videoType !== VideoType.CAMERA || this.room.getFromPresence(videoTypeTagName)) {
-            this.sendCommand(videoTypeTagName, { value: newTrack.videoType });
-        }
-    }
+    //     // if video type is camera and there is no videoType in presence, we skip adding it, as this is the default one
+    //     if (newTrack.videoType !== VideoType.CAMERA || this.room.getFromPresence(videoTypeTagName)) {
+    //         this.sendCommand(videoTypeTagName, { value: newTrack.videoType });
+    //     }
+    // }
     this.rtc.addLocalTrack(newTrack);
 
     // ensure that we're sharing proper "is muted" state
@@ -1221,16 +1221,16 @@ JitsiConference.prototype._setupNewTrack = function(newTrack) {
         this.room.setVideoMute(newTrack.isMuted());
     }
 
-    newTrack.muteHandler = this._fireMuteChangeEvent.bind(this, newTrack);
-    newTrack.audioLevelHandler = this._fireAudioLevelChangeEvent.bind(this);
-    newTrack.addEventListener(
-        JitsiTrackEvents.TRACK_MUTE_CHANGED,
-        newTrack.muteHandler);
-    newTrack.addEventListener(
-        JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED,
-        newTrack.audioLevelHandler);
+    // newTrack.muteHandler = this._fireMuteChangeEvent.bind(this, newTrack);
+    // newTrack.audioLevelHandler = this._fireAudioLevelChangeEvent.bind(this);
+    // newTrack.addEventListener(
+    //     JitsiTrackEvents.TRACK_MUTE_CHANGED,
+    //     newTrack.muteHandler);
+    // newTrack.addEventListener(
+    //     JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED,
+    //     newTrack.audioLevelHandler);
 
-    newTrack._setConference(this);
+    // newTrack._setConference(this);
 
     this.eventEmitter.emit(JitsiConferenceEvents.TRACK_ADDED, newTrack);
 };

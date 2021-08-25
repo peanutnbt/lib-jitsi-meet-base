@@ -2048,19 +2048,27 @@ export default class JingleSessionPC extends JingleSession {
      */
     replaceTrack(oldTrack, newTrack) {
         const workFunction = finishedCallback => {
-            logger.debug(`${this} replaceTrack worker started. oldTrack = ${oldTrack}, newTrack = ${newTrack}`);
+            // logger.debug(`${this} replaceTrack worker started. oldTrack = ${oldTrack}, newTrack = ${newTrack}`);
+            // console.log("replaceTrack worker started. oldTrack = ", oldTrack , newTrack)
+            console.log("replaceTrack worker started. newTrack = ", newTrack.track.kind , newTrack.stream.id)
 
-            const oldLocalSdp = this.peerconnection.localDescription.sdp;
-            this.peerconnection.peerconnection.addTrack(newTrack.track, newTrack.stream);
-            this._renegotiate().then(() => {
-                const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
-                this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
-                finishedCallback()
-            });
+            // if(newTrack.track.kind == "audio") {
+                const oldLocalSdp = this.peerconnection.localDescription.sdp;
+                this.peerconnection.peerconnection.addTrack(newTrack.track, newTrack.stream);
+                
+                this._renegotiate().then(() => {
+                    const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
+                    console.log("notifyMySSRCUpdate---newLocalSDP--: ", newLocalSDP)
+                    this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
+                    finishedCallback()
+                });
+            // }
+            
+            
         };
 
         return new Promise((resolve, reject) => {
-            logger.debug(`${this} Queued replaceTrack task. Old track = ${oldTrack}, new track = ${newTrack}`);
+            // logger.debug(`${this} Queued replaceTrack task. Old track = ${oldTrack}, new track = ${newTrack}`);
 
             this.modificationQueue.push(
                 workFunction,

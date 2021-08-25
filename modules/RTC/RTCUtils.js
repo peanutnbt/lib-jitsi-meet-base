@@ -773,7 +773,6 @@ class RTCUtils extends Listenable {
 
         } catch (error) {
             console.log("eeeeeeeeeeeeeeeeeeeee22222:", error)
-            
         }
 
         return Promise.resolve(mediaStreamsMetaData)
