@@ -642,7 +642,7 @@ export default class JingleSessionPC extends JingleSession {
                         if (this.dripContainer.length === 0) {
                             return;
                         }
-                        console.log("sendIceCandidate olo1:")
+                        // console.log("sendIceCandidate olo1:")
 
                         this.sendIceCandidates(this.dripContainer);
                         this.dripContainer = [];
@@ -690,7 +690,7 @@ export default class JingleSessionPC extends JingleSession {
 
         for (let mid = 0; mid < localSDP.media.length; mid++) {
             const cands = candidates.filter(el => el.sdpMLineIndex === mid);
-            console.log("--cands:", cands)
+            // console.log("--cands:", cands)
             const mline
                 = SDPUtil.parseMLine(localSDP.media[mid].split('\r\n')[0]);
 
@@ -742,7 +742,7 @@ export default class JingleSessionPC extends JingleSession {
         // might merge last-candidate notification into this, but it is called
         // a lot later. See webrtc issue #2340
         // logger.log('was this the last candidate', this.lasticecandidate);
-        console.log("----elem -sendIceCandidates-: ", cand)
+        // console.log("----elem -sendIceCandidates-: ", cand)
         this.connection.sendIQ(
             cand, null, this.newJingleErrorHandler(cand), IQ_TIMEOUT);
     }
@@ -1117,7 +1117,6 @@ export default class JingleSessionPC extends JingleSession {
                     if (oldLocalSdp) {
                         const newLocalSdp
                             = new SDP(this.peerconnection.localDescription.sdp);
-                        console.log("----elem -notifyMySSRCUpdate-: ")
 
                         this.notifyMySSRCUpdate(
                             new SDP(oldLocalSdp), newLocalSdp);
@@ -1617,7 +1616,7 @@ export default class JingleSessionPC extends JingleSession {
     onXmppStatusChanged(status) {
         if (status === XmppConnection.Status.CONNECTED && this._cachedOldLocalSdp) {
             logger.info(`${this} Sending SSRC update on reconnect`);
-            console.log("----elem -notifyMySSRCUpdate-: ")
+            // console.log("----elem : ")
 
             this.notifyMySSRCUpdate(
                 this._cachedOldLocalSdp,
@@ -1742,7 +1741,6 @@ export default class JingleSessionPC extends JingleSession {
                 this._renegotiate(newRemoteSdp.raw)
                     .then(() => {
                         const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
-                        console.log("----elem -notifyMySSRCUpdate-: ")
 
                         this.notifyMySSRCUpdate(oldLocalSdp, newLocalSDP);
                         finishCallback();
@@ -1817,7 +1815,6 @@ export default class JingleSessionPC extends JingleSession {
                         = new SDP(this.peerconnection.localDescription.sdp);
 
                     logger.log(`${this} ${logPrefix} - OK`);
-                    console.log("----elem -notifyMySSRCUpdate-: ")
 
                     this.notifyMySSRCUpdate(oldLocalSdp, newLocalSdp);
                     finishedCallback();
@@ -2060,75 +2057,6 @@ export default class JingleSessionPC extends JingleSession {
                 this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
                 finishedCallback()
             });
-
-            // if (!this.usesUnifiedPlan) {
-            //     // NOTE the code below assumes that no more than 1 video track
-            //     // can be added to the peer connection.
-            //     // Transition from camera to desktop share
-            //     // or transition from one camera source to another.
-            //     if (this.peerconnection.options.capScreenshareBitrate
-            //         && oldTrack && newTrack && newTrack.isVideoTrack()) {
-            //         // Clearing current primary SSRC will make
-            //         // the SdpConsistency generate a new one which will result
-            //         // with:
-            //         // 1. source-remove for the old video stream.
-            //         // 2. source-add for the new video stream.
-            //         this.peerconnection.clearRecvonlySsrc();
-            //     }
-
-            //     // Transition from no video to video (unmute).
-            //     if (!oldTrack && newTrack && newTrack.isVideoTrack()) {
-            //         // Clearing current primary SSRC will make
-            //         // the SdpConsistency generate a new one which will result
-            //         // with:
-            //         // 1. source-remove for the recvonly
-            //         // 2. source-add for the new video stream
-            //         this.peerconnection.clearRecvonlySsrc();
-
-            //     // Transition from video to no video
-            //     } else if (oldTrack && oldTrack.isVideoTrack() && !newTrack) {
-            //         // Clearing current primary SSRC and generating the recvonly
-            //         // will result in:
-            //         // 1. source-remove for the old video stream
-            //         // 2. source-add for the recvonly stream
-            //         this.peerconnection.clearRecvonlySsrc();
-            //         this.peerconnection.generateRecvonlySsrc();
-            //     }
-            // }
-
-            // this.peerconnection.replaceTrack(oldTrack, newTrack)
-            //     .then(shouldRenegotiate => {
-            //         let promise = Promise.resolve();
-
-            //         logger.debug(`${this} TPC.replaceTrack finished. shouldRenegotiate = ${
-            //             shouldRenegotiate}, JingleSessionState = ${this.state}`);
-
-            //         if (shouldRenegotiate
-            //             && (oldTrack || newTrack)
-            //             && this.state === JingleSessionState.ACTIVE) {
-            //             promise = this._renegotiate().then(() => {
-            //                 const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
-            //                 console.log("----elem -notifyMySSRCUpdate-: ")
-
-            //                 this.notifyMySSRCUpdate(new SDP(oldLocalSdp), newLocalSDP);
-            //             });
-            //         }
-
-            //         return promise.then(() => {
-            //             if (newTrack && newTrack.isVideoTrack()) {
-            //                 logger.debug(`${this} replaceTrack worker: configuring video stream`);
-
-            //                 // FIXME set all sender parameters in one go?
-            //                 // Set the degradation preference on the new video sender.
-            //                 // return this.peerconnection.setSenderVideoDegradationPreference()
-            //                 //     .then(() => this.peerconnection.setSenderVideoConstraint())
-            //                 //     .then(() => this.peerconnection.setMaxBitRate());
-            //                 return this.peerconnection.setSenderVideoConstraint()
-            //                     .then(() => this.peerconnection.setMaxBitRate());
-            //             }
-            //         });
-            //     })
-            //     .then(() => finishedCallback(), error => finishedCallback(error));
         };
 
         return new Promise((resolve, reject) => {
@@ -2568,7 +2496,6 @@ export default class JingleSessionPC extends JingleSession {
 
         if (removedAnySSRCs) {
             // logger.info(`${this} Sending source-remove`, remove.tree());
-            console.log("----elem -notifyMySSRCUpdate-: ", remove)
 
             this.connection.sendIQ(
                 remove, null,
@@ -2593,7 +2520,6 @@ export default class JingleSessionPC extends JingleSession {
 
         if (containsNewSSRCs) {
             // logger.info(`${this} Sending source-add`, add.tree());
-            console.log("----elem -notifyMySSRCUpdate-: ", add)
 
             this.connection.sendIQ(
                 add, null, this.newJingleErrorHandler(add), IQ_TIMEOUT);

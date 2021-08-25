@@ -271,7 +271,7 @@ Moderator.prototype.allocateConferenceFocus = function() {
         this.setFocusUserJid(this.options.connection.focusUserJid);
 
         // Send create conference IQ
-        console.log("---------elem--allocateConferenceFocus------: ", this.createConferenceIq())
+        // console.log("---------elem--allocateConferenceFocus------: ", this.createConferenceIq())
 
         this.connection.sendIQ(
             this.createConferenceIq(),

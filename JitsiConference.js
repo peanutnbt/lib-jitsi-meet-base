@@ -124,6 +124,7 @@ export default function JitsiConference(options) {
         logger.error(errmsg);
         throw new Error(errmsg);
     }
+
     this.eventEmitter = new EventEmitter();
     this.options = options;
     this.eventManager = new JitsiConferenceEventManager(this);
@@ -342,6 +343,7 @@ JitsiConference.prototype._init = function(options = {}) {
         },
         JitsiConference.resourceCreator
     );
+    this.setDisplayName("MUC users")
 
     // Connection interrupted/restored listeners
     this._onIceConnectionInterrupted
@@ -2134,11 +2136,11 @@ JitsiConference.prototype._setBridgeChannel = function(offerIq, pc) {
 
     if (wsUrl) {
         // If the offer contains a websocket use it.
-        console.log("---------_setBridgeChannel websocket-----------: ", wsUrl)
+        // console.log("---------_setBridgeChannel websocket-----------: ", wsUrl)
         this.rtc.initializeBridgeChannel(null, wsUrl);
     } else {
         // Otherwise, fall back to an attempt to use SCTP.
-        console.log("---------_setBridgeChannel SCTP-----------")
+        // console.log("---------_setBridgeChannel SCTP-----------")
         this.rtc.initializeBridgeChannel(pc, null);
     }
 };

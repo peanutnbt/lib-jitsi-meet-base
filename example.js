@@ -840,10 +840,10 @@ mcu.main = media_tracks =>
   })
 const options = {
   hosts: {
-    domain: 'jitsimeet.example.com',
-    muc: 'conference.jitsimeet.example.com' // FIXME: use XEP-0030
+    domain: 'meeting.atviettelsolutions.com',
+    muc: 'conference.meeting.atviettelsolutions.com' // FIXME: use XEP-0030
   },
-  bosh: 'https://jitsimeet.example.com/http-bind', // FIXME: use xep-0156 for that
+  bosh: 'https://meeting.atviettelsolutions.com/http-bind', // FIXME: use xep-0156 for that
 
   // The name of client node advertised in XEP-0115 'c' stanza
   clientNode: 'http://jitsi.org/jitsimeet'
@@ -1009,7 +1009,7 @@ function onUserLeft (id) {
  * That function is called when connection is established successfully
  */
 function onConnectionSuccess () {
-  room = connection.initJitsiConference('conference', confOptions)
+  room = connection.initJitsiConference('conference1', confOptions)
   console.log('room: ', room)
   room.on(JitsiMeetJS.events.conference.TRACK_ADDED, onRemoteTrack)
   room.on(JitsiMeetJS.events.conference.TRACK_REMOVED, track => {

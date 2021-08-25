@@ -224,8 +224,8 @@ export default function TraceablePeerConnection(
         logger.warn('Optional param is not an array, rtcstats p2p data is omitted.');
     }
 
-    console.log("----safeConstraints-----:", safeConstraints)
-    console.log("----safeConstraints- iceConfig----:", iceConfig)
+    // console.log("----safeConstraints-----:", safeConstraints)
+    // console.log("----safeConstraints- iceConfig----:", iceConfig)
 
     this.peerconnection
         = new RTCUtils.RTCPeerConnectionType(iceConfig, safeConstraints);
@@ -743,7 +743,7 @@ TraceablePeerConnection.prototype.getTargetVideoBitrates = function () {
  * @return {JitsiTrack|null}
  */
 TraceablePeerConnection.prototype.getTrackBySSRC = function (ssrc) {
-    console.log("----getSsrcByTrack-2--")
+    // console.log("----getSsrcByTrack-2--")
     if (typeof ssrc !== 'number') {
         throw new Error(`SSRC ${ssrc} is not a number`);
     }
@@ -751,7 +751,7 @@ TraceablePeerConnection.prototype.getTrackBySSRC = function (ssrc) {
 
     for (const localTrack of this.localTracks.values()) {
         if (this.getLocalSSRC(localTrack) === ssrc) {
-            console.log('--------addTrack---1----')
+            // console.log('--------addTrack---1----')
 
             return localTrack;
         }
@@ -772,7 +772,7 @@ TraceablePeerConnection.prototype.getTrackBySSRC = function (ssrc) {
  * @return {number|null}
  */
 TraceablePeerConnection.prototype.getSsrcByTrackId = function (id) {
-    console.log("----getSsrcByTrack-3--")
+    // console.log("----getSsrcByTrack-3--")
 
     const findTrackById = track => track.getTrack().id === id;
     const localTrack = this.getLocalTracks().find(findTrackById);
@@ -1225,7 +1225,6 @@ TraceablePeerConnection.prototype._extractSSRCMap = function (desc) {
     }
 
     for (const mLine of media) {
-    console.log("mLinemLinemLinemLine: ", mLine)
 
         if (!Array.isArray(mLine.ssrcs)) {
             continue; // eslint-disable-line no-continue
@@ -1286,7 +1285,6 @@ TraceablePeerConnection.prototype._extractSSRCMap = function (desc) {
             }
         }
     }
-    console.log("----setSSRCMap---: ", ssrcMap)
 
     return ssrcMap;
 };
@@ -1455,7 +1453,7 @@ const enforceSendRecv = function (localDescription, options) {
  * @param {JitsiLocalTrack} localTrack
  */
 TraceablePeerConnection.prototype.getLocalSSRC = function (localTrack) {
-    console.log("----getSsrcByTrack-4--")
+    // console.log("----getSsrcByTrack-4--")
     
     const ssrcInfo = this._getSSRC(localTrack.rtcId);
 
@@ -1601,7 +1599,7 @@ Object.keys(getters).forEach(prop => {
 });
 
 TraceablePeerConnection.prototype._getSSRC = function (rtcId) {
-    console.log("----getSsrcByTrack-5--")
+    // console.log("----getSsrcByTrack-5--")
     // console.log("----localSSRCs-4---:", ssrc)
     
     return this.localSSRCs.get(rtcId);
@@ -2827,11 +2825,6 @@ TraceablePeerConnection.prototype._createOfferOrAnswer = function (
     
     const handleSuccess = (resultSdp, resolveFn, rejectFn) => {
         try {
-            // console.log(`_processLocalSSRCsMap${logName}: `, dumpSDP(resultSdp))
-            // console.log(`_processLocalSSRCsMap111${logName}: `,resultSdp)
-
-            console.log("---_renegotiate create "+ isOffer +"-==: ", resultSdp, new Date().getTime())
-
 
             if (!this._usesUnifiedPlan) {
                 // If there are no local video tracks, then a "recvonly"
@@ -2883,7 +2876,6 @@ TraceablePeerConnection.prototype._createOfferOrAnswer = function (
             const ssrcMap = this._extractSSRCMap(resultSdp);
 
             this._processLocalSSRCsMap(ssrcMap);
-            console.log("----resultSdp---_createOfferOrAnswer: ", ssrcMap)
             resolveFn(resultSdp);
         } catch (e) {
             this.trace(`create${logName}OnError`, e);
