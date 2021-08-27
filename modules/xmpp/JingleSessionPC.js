@@ -2004,7 +2004,7 @@ export default class JingleSessionPC extends JingleSession {
 
                 return this.peerconnection.createAnswer(this.mediaConstraints)
                     .then(answer => {
-                        logger.debug(`${this} Renegotiate: setting local description`);
+                        logger.debug(`${this} Renegotiate: setting local description:`, answer);
 
                         return this.peerconnection.setLocalDescription(answer);
                     });
