@@ -2047,15 +2047,20 @@ export default class JingleSessionPC extends JingleSession {
      *  with no arguments or rejects with an error {string}
      */
     replaceTrack(oldTrack, newTrack) {
-        const workFunction = finishedCallback => {
+        const workFunction = async finishedCallback => {
             // logger.debug(`${this} replaceTrack worker started. oldTrack = ${oldTrack}, newTrack = ${newTrack}`);
             // console.log("replaceTrack worker started. oldTrack = ", oldTrack , newTrack)
             console.log("replaceTrack worker started. newTrack = ", newTrack.track.kind , newTrack.stream.id)
+            console.log('--------addTrack-------:')
 
             // if(newTrack.track.kind == "audio") {
                 const oldLocalSdp = this.peerconnection.localDescription.sdp;
                 this.peerconnection.peerconnection.addTrack(newTrack.track, newTrack.stream);
                 
+            var offer = await this.peerconnection.peerconnection.createOffer();
+            console.log("--CUSTOME PEER---: ", offer)
+            console.log("--CUSTOME remoteDescription---: ", this.peerconnection.remoteDescription)
+
                 this._renegotiate().then(() => {
                     const newLocalSDP = new SDP(this.peerconnection.localDescription.sdp);
                     console.log("notifyMySSRCUpdate---newLocalSDP--: ", newLocalSDP)

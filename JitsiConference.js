@@ -343,7 +343,7 @@ JitsiConference.prototype._init = function(options = {}) {
         },
         JitsiConference.resourceCreator
     );
-    this.setDisplayName("MUC users")
+    this.setDisplayName("MCU users")
 
     // Connection interrupted/restored listeners
     this._onIceConnectionInterrupted
@@ -1231,7 +1231,7 @@ JitsiConference.prototype._setupNewTrack = function(newTrack) {
     //     newTrack.audioLevelHandler);
 
     // newTrack._setConference(this);
-
+    console.log("JitsiConferenceEvents.TRACK_ADDED: ", newTrack)
     this.eventEmitter.emit(JitsiConferenceEvents.TRACK_ADDED, newTrack);
 };
 
@@ -1246,6 +1246,7 @@ JitsiConference.prototype._setupNewTrack = function(newTrack) {
  */
 JitsiConference.prototype._addLocalTrackAsUnmute = function(track) {
     const addAsUnmutePromises = [];
+    console.log('--------addTrack-------:')
 
     if (this.jvbJingleSession) {
         addAsUnmutePromises.push(this.jvbJingleSession.addTrackAsUnmute(track));
@@ -1884,6 +1885,7 @@ JitsiConference.prototype.onRemoteTrackAdded = function(track) {
             }
         }
     );
+    console.log("JitsiConferenceEvents.TRACK_ADDED: ", track)
 
     emitter.emit(JitsiConferenceEvents.TRACK_ADDED, track);
 };

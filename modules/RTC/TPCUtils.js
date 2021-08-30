@@ -223,6 +223,7 @@ export class TPCUtils {
     */
     addTrack(localTrack, isInitiator) {
         const track = localTrack.getTrack();
+        console.log('--------addTrack-------:')
 
         if (isInitiator) {
             // Use pc.addTransceiver() for the initiator case when local tracks are getting added
@@ -256,6 +257,7 @@ export class TPCUtils {
         const mediaType = localTrack.getType();
         const track = localTrack.getTrack();
         const transceiver = this._findTransceiver(mediaType);
+        console.log('--------addTrack-------:')
 
         if (!transceiver) {
             return Promise.reject(new Error(`RTCRtpTransceiver for ${mediaType} not found`));
@@ -316,6 +318,8 @@ export class TPCUtils {
      * @returns {Promise<void>} - resolved when done.
      */
     replaceTrack(oldTrack, newTrack) {
+        console.log('--------addTrack-------:')
+
         if (oldTrack && newTrack) {
             const mediaType = newTrack.getType();
             const stream = newTrack.getOriginalStream();

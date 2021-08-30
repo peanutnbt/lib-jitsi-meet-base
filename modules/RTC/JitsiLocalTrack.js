@@ -64,7 +64,8 @@ export default class JitsiLocalTrack extends JitsiTrack {
         stream,
         track,
         videoType,
-        effects = []
+        effects = [],
+        name
     }) {
         super(
             /* conference */ null,
@@ -89,6 +90,7 @@ export default class JitsiLocalTrack extends JitsiTrack {
         this.rtcId = rtcId;
         this.sourceId = sourceId;
         this.sourceType = sourceType;
+        this.name = name;
 
         // Get the resolution from the track itself because it cannot be
         // certain which resolution webrtc has fallen back to using.
@@ -412,6 +414,7 @@ export default class JitsiLocalTrack extends JitsiTrack {
                     this.containers.forEach(cont => RTCUtils.attachMediaStream(cont, this.stream));
                 }
                 console.log("---addLocalTrack-2--")
+                console.log('--------addTrack-------:')
 
                 return conference.addTrack(this);
             })

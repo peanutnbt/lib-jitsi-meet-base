@@ -939,9 +939,9 @@ TraceablePeerConnection.prototype._remoteTrackAdded = function (stream, track, t
 
     const muted = peerMediaInfo.muted;
     const videoType = peerMediaInfo.videoType; // can be undefined
-
+    console.log("peerMediaInfo: ", peerMediaInfo)
     this._createRemoteTrack(
-        ownerEndpointId, stream, track, mediaType, videoType, trackSsrc, muted);
+        ownerEndpointId, stream, track, mediaType, videoType, trackSsrc, muted, peerMediaInfo.nick);
 };
 
 // FIXME cleanup params
@@ -966,7 +966,8 @@ TraceablePeerConnection.prototype._createRemoteTrack = function (
     mediaType,
     videoType,
     ssrc,
-    muted) {
+    muted,
+    nick) {
     let remoteTracksMap = this.remoteTracks.get(ownerEndpointId);
 
     if (!remoteTracksMap) {
@@ -1006,7 +1007,8 @@ TraceablePeerConnection.prototype._createRemoteTrack = function (
             videoType,
             ssrc,
             muted,
-            this.isP2P);
+            this.isP2P,
+            nick);
 
     remoteTracksMap.set(mediaType, remoteTrack);
 
@@ -1715,6 +1717,7 @@ TraceablePeerConnection.prototype.addTrack = function (track, isInitiator = fals
     // }
 
     // this.localTracks.set(rtcId, track);
+    console.log('--------addTrack-------:')
 
     this.peerconnection.addTrack(track.track, track.stream);
 
@@ -1794,6 +1797,8 @@ TraceablePeerConnection.prototype.addTrack = function (track, isInitiator = fals
  * Promise is rejected when something goes wrong.
  */
 TraceablePeerConnection.prototype.addTrackUnmute = function (track) {
+    console.log('--------addTrack-------:')
+
     if (!this._assertTrackBelongs('addTrackUnmute', track)) {
         // Abort
         return Promise.reject('Track not found on the peerconnection');

@@ -1630,17 +1630,21 @@ export default class ChatRoom extends Listenable {
     getMediaPresenceInfo(endpointId, mediaType) {
         // Will figure out current muted status by looking up owner's presence
         const pres = this.lastPresences[`${this.roomjid}/${endpointId}`];
-
+        console.log("pres la gi: ", pres)
         if (!pres) {
             // No presence available
             return null;
         }
         const data = {
             muted: true, // muted by default
-            videoType: undefined // no video type by default
+            videoType: undefined, // no video type by default
+            nick: ""
         };
         let mutedNode = null;
-
+        const nickNode = filterNodeFromPresenceJSON(pres, 'nick');
+        if (nickNode.length > 0) {
+            data.nick = nickNode[0].value;
+        }
         if (mediaType === MediaType.AUDIO) {
             mutedNode = filterNodeFromPresenceJSON(pres, 'audiomuted');
         } else if (mediaType === MediaType.VIDEO) {
@@ -1654,6 +1658,7 @@ export default class ChatRoom extends Listenable {
             if (codecTypeNode.length > 0) {
                 data.codecType = codecTypeNode[0].value;
             }
+            
         } else {
             logger.error(`Unsupported media type: ${mediaType}`);
 
